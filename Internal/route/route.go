@@ -1,0 +1,11 @@
+package route
+
+import (
+	handler "TaskMangment/Internal/handler"
+
+	"github.com/gin-gonic/gin"
+)
+
+func RegisterUserRoutes(r *gin.Engine, userHandler *handler.UserHandler) {
+	r.POST("/register", userHandler.Register)
+}
