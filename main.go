@@ -5,6 +5,7 @@ import (
 	repositry "TaskMangment/Internal/Repositry"
 	service "TaskMangment/Internal/Service"
 	handler "TaskMangment/Internal/handler"
+	middelware "TaskMangment/Internal/middelware"
 	"TaskMangment/Internal/route"
 	"log"
 
@@ -21,7 +22,9 @@ func main() {
 	service := service.NewUserService(repo)
 	handler := handler.NewUserHandler(*service)
 	r := gin.Default()
-	route.RegisterUserRoutes(r, handler)
+	r.Use(middelware.ErrorMiddleware())
+	authRoutes := r.Group("", middelware.AuthMiddleeare())
+	route.RegisterUserRoutes(authRoutes, handler)
 	route.LoginUserRoutes(r, handler)
 	r.Run(":8080")
 }

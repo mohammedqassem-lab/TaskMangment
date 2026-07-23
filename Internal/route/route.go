@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterUserRoutes(r *gin.Engine, userHandler *handler.UserHandler) {
+func RegisterUserRoutes(r *gin.RouterGroup, userHandler *handler.UserHandler) {
 	r.POST("/register", userHandler.Register)
 }
 func LoginUserRoutes(r *gin.Engine, userHandler *handler.UserHandler) {
