@@ -23,3 +23,13 @@ func (r *UserRepositry) Create(ctx context.Context, user *model.User) error {
 	}
 	return nil
 }
+func (r *UserRepositry) GetByEmail(ctx context.Context, email string) (*model.User, error) {
+	q := "SELECT id,name,email,Hashpassword FROM users WHERE email=$1"
+	row := r.db.QueryRowContext(ctx, q, email)
+	var user model.User
+	err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Hashpassword)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}

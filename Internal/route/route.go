@@ -9,3 +9,6 @@ import (
 func RegisterUserRoutes(r *gin.Engine, userHandler *handler.UserHandler) {
 	r.POST("/register", userHandler.Register)
 }
+func LoginUserRoutes(r *gin.Engine, userHandler *handler.UserHandler) {
+	r.POST("/login", userHandler.Login)
+}

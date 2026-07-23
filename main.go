@@ -2,11 +2,13 @@ package main
 
 import (
 	database "TaskMangment/Internal/DataBase"
-	handler "TaskMangment/Internal/handler"
 	repositry "TaskMangment/Internal/Repositry"
 	service "TaskMangment/Internal/Service"
-	"github.com/gin-gonic/gin"
+	handler "TaskMangment/Internal/handler"
+	"TaskMangment/Internal/route"
 	"log"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -20,5 +22,6 @@ func main() {
 	handler := handler.NewUserHandler(*service)
 	r := gin.Default()
 	route.RegisterUserRoutes(r, handler)
+	route.LoginUserRoutes(r, handler)
 	r.Run(":8080")
 }
