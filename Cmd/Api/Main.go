@@ -1,34 +1,19 @@
 package main
 
 import (
-	database "TaskMangment/Internal/DataBase"
-	repositry "TaskMangment/Internal/Repositry"
-	service "TaskMangment/Internal/Service"
-	handler "TaskMangment/Internal/handler"
-	middelware "TaskMangment/Internal/middelware"
-	"TaskMangment/Internal/route"
+	app "TaskMangment/Internal/App"
 	"log"
-
-	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	db, err := database.ConnectToDb()
+	application, err := app.New()
 	if err != nil {
-		log.Fatalf("error daring conact to db %v", err.Error())
+		log.Fatalf("error during application startup: %v", err)
 	}
-	defer db.Close()
-	Userrepo := repositry.GetNewUserRepositry(db)
-	Userservice := service.NewUserService(Userrepo)
-	Userhandler := handler.NewUserHandler(*Userservice)
-	workspaceRepo := repositry.GetNewWorkspaceRepository(db)
-	workspaceService := service.NewWorkspaceService(workspaceRepo)
-	workspaceHandler := handler.NewWorkspaceHandler(*workspaceService)
-	r := gin.Default()
-	r.Use(middelware.ErrorMiddleware())
-	authRoutes := r.Group("", middelware.AuthMiddleeare())
-	route.RegisterUserRoutes(authRoutes, Userhandler)
-	route.LoginUserRoutes(r, Userhandler)
-	route.CreateWorkspaceRoutes(authRoutes, workspaceHandler)
-	r.Run(":8080")
+
+	defer application.DB.Close()
+
+	if err := application.Router.Run(":8080"); err != nil {
+		log.Fatal(err)
+	}
 }
