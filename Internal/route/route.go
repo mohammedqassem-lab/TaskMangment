@@ -12,3 +12,6 @@ func RegisterUserRoutes(r *gin.RouterGroup, userHandler *handler.UserHandler) {
 func LoginUserRoutes(r *gin.Engine, userHandler *handler.UserHandler) {
 	r.POST("/login", userHandler.Login)
 }
+func CreateWorkspaceRoutes(r *gin.RouterGroup, workspaceHandler *handler.WorkspaceHandler) {
+	r.POST("/workspace/create", workspaceHandler.CreateWorkspace)
+}

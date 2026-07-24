@@ -27,7 +27,7 @@ func AuthMiddleeare() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-		ctx.Set("user", clims)
+		ctx.Set("user", clims.UserID)
 		ctx.Next()
 	}
 }
