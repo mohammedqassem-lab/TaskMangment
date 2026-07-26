@@ -78,7 +78,6 @@ func (r *WorkspaceRepository) GetRole(ctx context.Context, workspaceID, userID i
 	}
 	return role, nil
 }
-
 func (r *WorkspaceRepository) GetWorkspaceByUserID(ctx context.Context, UserId int64) (*model.Workspace, error) {
 	query := `
 	SELECT w.id, w.name, w.description, w.owner_id

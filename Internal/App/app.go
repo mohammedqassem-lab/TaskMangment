@@ -28,16 +28,19 @@ func New() (*App, error) {
 	userRepo := repositry.GetNewUserRepositry(db)
 	workspaceRepo := repositry.GetNewWorkspaceRepository(db)
 	WorkspaceMemberRepo := repositry.GetNewWorkspaceMemberRepository(db)
+	ProjectRepository := repositry.GetNewProjectRepository(db)
 
 	// Services
 	userService := service.NewUserService(userRepo)
 	workspaceService := service.NewWorkspaceService(workspaceRepo)
 	workspaceMemberService := service.NewWorkspaceMemberService(WorkspaceMemberRepo)
+	ProjectService := service.NewProjectService(ProjectRepository)
 
 	// Handlers
 	userHandler := handler.NewUserHandler(*userService)
 	workspaceHandler := handler.NewWorkspaceHandler(*workspaceService)
 	workspaceMemberHandler := handler.NewWorkspaceMemberHandler(*workspaceMemberService)
+	projectHandler := handler.NewProjectHandler(*ProjectService)
 
 	// Router
 	r := gin.Default()
@@ -49,6 +52,9 @@ func New() (*App, error) {
 
 	AdminRoutes := authRoutes.Group("")
 	AdminRoutes.Use(middelware.RequireRole(workspaceRepo, "Admin"))
+
+	adminAndMemperRoutes := authRoutes.Group("")
+	adminAndMemperRoutes.Use(middelware.RequireRole(workspaceRepo, "Admin", "Member"))
 	//Account Routes
 	route.LoginUserRoutes(r, userHandler)
 
@@ -69,6 +75,17 @@ func New() (*App, error) {
 	route.UpdateMemberRoleRoutes(AdminRoutes, workspaceMemberHandler)
 
 	route.DeleteMemberRoutes(AdminRoutes, workspaceMemberHandler)
+	//project route
+
+	route.CreateProject(adminAndMemperRoutes, projectHandler)
+
+	route.GetById(authRoutes, projectHandler)
+
+	route.Get(adminAndMemperRoutes, projectHandler)
+
+	route.Update(adminAndMemperRoutes, projectHandler)
+
+	route.Delete(adminAndMemperRoutes, projectHandler)
 
 	return &App{
 		DB:     db,
