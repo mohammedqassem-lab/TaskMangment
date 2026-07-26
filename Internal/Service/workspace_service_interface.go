@@ -7,5 +7,7 @@ import (
 
 type IWorkspaceService interface {
 	Create(ctx context.Context, workspace *model.Workspace) error
-	InviteMember(ctx context.Context, workspaceID int64, userID int64, role string) error
+	GetAllWorkspace(ctx context.Context) ([]*model.Workspace, error)
+	UpdateWorkspace(ctx context.Context, workspace *model.Workspace) error
+	deleteWorkspace(ctx context.Context, workspaceID int64) error
 }

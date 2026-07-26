@@ -27,14 +27,17 @@ func New() (*App, error) {
 	// Repositories
 	userRepo := repositry.GetNewUserRepositry(db)
 	workspaceRepo := repositry.GetNewWorkspaceRepository(db)
+	WorkspaceMemberRepo := repositry.GetNewWorkspaceMemberRepository(db)
 
 	// Services
 	userService := service.NewUserService(userRepo)
 	workspaceService := service.NewWorkspaceService(workspaceRepo)
+	workspaceMemberService := service.NewWorkspaceMemberService(WorkspaceMemberRepo)
 
 	// Handlers
 	userHandler := handler.NewUserHandler(*userService)
 	workspaceHandler := handler.NewWorkspaceHandler(*workspaceService)
+	workspaceMemberHandler := handler.NewWorkspaceMemberHandler(*workspaceMemberService)
 
 	// Router
 	r := gin.Default()
@@ -46,14 +49,26 @@ func New() (*App, error) {
 
 	AdminRoutes := authRoutes.Group("")
 	AdminRoutes.Use(middelware.RequireRole(workspaceRepo, "Admin"))
-
+	//Account Routes
 	route.LoginUserRoutes(r, userHandler)
 
 	route.RegisterUserRoutes(r, userHandler)
-
+	//Workspace Routes
 	route.CreateWorkspaceRoutes(authRoutes, workspaceHandler)
 
-	route.InviteMemberRoutes(AdminRoutes, workspaceHandler)
+	route.GetAllWorkspaceRoutes(authRoutes, workspaceHandler)
+
+	route.UpdateWorkspaceRoutes(AdminRoutes, workspaceHandler)
+
+	route.DeleteWorkspaceRoutes(AdminRoutes, workspaceHandler)
+	//Workspace Member Routes
+	route.InviteMemberRoutes(AdminRoutes, workspaceMemberHandler)
+
+	route.GetWorkspaceMembersRoutes(AdminRoutes, workspaceMemberHandler)
+
+	route.UpdateMemberRoleRoutes(AdminRoutes, workspaceMemberHandler)
+
+	route.DeleteMemberRoutes(AdminRoutes, workspaceMemberHandler)
 
 	return &App{
 		DB:     db,

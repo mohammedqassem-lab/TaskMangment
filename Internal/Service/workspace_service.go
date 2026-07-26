@@ -4,7 +4,6 @@ import (
 	model "TaskMangment/Internal/Model"
 	repositry "TaskMangment/Internal/Repositry"
 	"context"
-	"fmt"
 )
 
 type WorkspaceService struct {
@@ -19,13 +18,12 @@ func NewWorkspaceService(repo repositry.IWorkspaceRepository) *WorkspaceService 
 func (s *WorkspaceService) Create(ctx context.Context, workspace *model.Workspace) error {
 	return s.repo.Create(ctx, workspace)
 }
-func (s *WorkspaceService) InviteMember(ctx context.Context, workspaceID int64, userID int64, role string) error {
-	workspace, err := s.repo.GetWorkspaceByUserID(ctx, userID)
-	if err == nil {
-		return fmt.Errorf("user is already a member of the workspace")
-	}
-	if workspace != nil {
-		return fmt.Errorf("user is already a member of the workspace")
-	}
-	return s.repo.AddMember(ctx, workspaceID, userID, role)
+func (s *WorkspaceService) GetAllWorkspace(ctx context.Context) ([]*model.Workspace, error) {
+	return s.repo.GetAllWorkspace(ctx)
+}
+func (s *WorkspaceService) UpdateWorkspace(ctx context.Context, workspace *model.Workspace) error {
+	return s.repo.UpdateWorkspace(ctx, workspace)
+}
+func (s *WorkspaceService) DeleteWorkspace(ctx context.Context, workspaceID int64) error {
+	return s.repo.DeleteWorkspace(ctx, workspaceID)
 }

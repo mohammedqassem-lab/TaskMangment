@@ -93,14 +93,46 @@ func (r *WorkspaceRepository) GetWorkspaceByUserID(ctx context.Context, UserId i
 	}
 	return &workspace, nil
 }
-func (r *WorkspaceRepository) AddMember(ctx context.Context, workspaceID, userID int64, role string) error {
+func (r *WorkspaceRepository) GetAllWorkspace(ctx context.Context) ([]*model.Workspace, error) {
 	query := `
-	INSERT INTO workspaces_member (workspace_id, user_id, role)
-	VALUES ($1, $2, $3);
+	SELECT id, name, description, owner_id
+	FROM workspaces;
 	`
-	_, err := r.db.ExecContext(ctx, query, workspaceID, userID, role)
+	rows, err := r.db.QueryContext(ctx, query)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	defer rows.Close()
+
+	var workspaces []*model.Workspace
+	for rows.Next() {
+		var workspace model.Workspace
+		err := rows.Scan(&workspace.ID, &workspace.Name, &workspace.Description, &workspace.OwnerID)
+		if err != nil {
+			return nil, err
+		}
+		workspaces = append(workspaces, &workspace)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return workspaces, nil
+}
+func (r *WorkspaceRepository) UpdateWorkspace(ctx context.Context, workspace *model.Workspace) error {
+	query := `
+	UPDATE workspaces
+	SET name = $1, description = $2
+	WHERE id = $3
+	`
+	_, err := r.db.ExecContext(ctx, query, workspace.Name, workspace.Description, workspace.ID)
+	return err
+}
+func (r *WorkspaceRepository) DeleteWorkspace(ctx context.Context, workspaceID int64) error {
+	query := `
+	DELETE FROM workspaces
+	WHERE id = $1
+	`
+	_, err := r.db.ExecContext(ctx, query, workspaceID)
+	return err
 }

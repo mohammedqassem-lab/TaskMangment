@@ -83,36 +83,65 @@ func (h *WorkspaceHandler) CreateWorkspace(c *gin.Context) {
 		"message": "Workspace created successfully",
 	})
 }
-func (h *WorkspaceHandler) InviteMember(c *gin.Context) {
-	var memper dto.MemperDto
-	workspaceID := c.Param("id")
-	workspaceIDInt, err := strconv.ParseInt(workspaceID, 10, 64)
+func (h *WorkspaceHandler) GetAllWorkspace(c *gin.Context) {
+	workspaces, err := h.workspaceService.GetAllWorkspace(c.Request.Context())
 	if err != nil {
-		c.JSON(400, gin.H{
-			"message": "Invalid workspace ID",
+		c.JSON(500, gin.H{
+			"message": "Internal Server Error",
+			"error":   err.Error(),
 		})
 		return
 	}
-	if err := c.ShouldBindJSON(&memper); err != nil {
+	c.JSON(200, gin.H{"workspaces": workspaces})
+}
+func (h *WorkspaceHandler) UpdateWorkspace(c *gin.Context) {
+	var workspace dto.UpdateWorkspaceDto
+	if err := c.ShouldBindJSON(&workspace); err != nil {
 		c.JSON(400, gin.H{
 			"message": "Bad Request",
 			"error":   err.Error(),
 		})
 		return
 	}
-	if workspaceID == "" {
-		c.JSON(400, gin.H{
-			"message": "Workspace ID is required",
-		})
-		return
-	}
-	err = h.workspaceService.InviteMember(c.Request.Context(), workspaceIDInt, memper.UserID, memper.Role)
+	workspaceID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(404, gin.H{
-			"error":   err.Error(),
-			"message": "Workspace not found",
+		c.JSON(400, gin.H{
+			"message": "Invalid workspace ID",
 		})
 		return
 	}
-	c.JSON(200, gin.H{"message": "Member invited successfully"})
+	var modelWorkspace model.Workspace
+	modelWorkspace.Name = workspace.Name
+	modelWorkspace.Description = workspace.Description
+	modelWorkspace.OwnerID = 0 // Set the owner ID to 0 or fetch it from the context if needed
+	modelWorkspace.ID = workspaceID
+	if err := h.workspaceService.UpdateWorkspace(c.Request.Context(), &modelWorkspace); err != nil {
+		c.JSON(500, gin.H{
+			"message": "Internal Server Error",
+			"error":   err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "Workspace updated successfully",
+	})
+}
+func (h *WorkspaceHandler) DeleteWorkspace(c *gin.Context) {
+	workspaceID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": "Invalid workspace ID",
+		})
+		return
+	}
+	if err := h.workspaceService.DeleteWorkspace(c.Request.Context(), workspaceID); err != nil {
+		c.JSON(500, gin.H{
+			"message": "Internal Server Error",
+			"error":   err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "Workspace deleted successfully",
+	})
 }

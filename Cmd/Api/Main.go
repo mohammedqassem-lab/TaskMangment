@@ -2,6 +2,7 @@ package main
 
 import (
 	app "TaskMangment/Internal/App"
+	"fmt"
 	"log"
 )
 
@@ -14,6 +15,6 @@ func main() {
 	defer application.DB.Close()
 
 	if err := application.Router.Run(":8080"); err != nil {
-		log.Fatal(err)
+		fmt.Print(err.Error())
 	}
 }
