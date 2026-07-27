@@ -29,18 +29,21 @@ func New() (*App, error) {
 	workspaceRepo := repositry.GetNewWorkspaceRepository(db)
 	WorkspaceMemberRepo := repositry.GetNewWorkspaceMemberRepository(db)
 	ProjectRepository := repositry.GetNewProjectRepository(db)
+	TaskRepositry := repositry.GetNewTaskRepository(db)
 
 	// Services
 	userService := service.NewUserService(userRepo)
 	workspaceService := service.NewWorkspaceService(workspaceRepo)
 	workspaceMemberService := service.NewWorkspaceMemberService(WorkspaceMemberRepo)
 	ProjectService := service.NewProjectService(ProjectRepository)
+	TaskService := service.NewTaskService(TaskRepositry)
 
 	// Handlers
 	userHandler := handler.NewUserHandler(*userService)
 	workspaceHandler := handler.NewWorkspaceHandler(*workspaceService)
 	workspaceMemberHandler := handler.NewWorkspaceMemberHandler(*workspaceMemberService)
 	projectHandler := handler.NewProjectHandler(*ProjectService)
+	taskHandler := handler.NewTaskHandler(*TaskService)
 
 	// Router
 	r := gin.Default()
@@ -86,7 +89,13 @@ func New() (*App, error) {
 	route.Update(adminAndMemperRoutes, projectHandler)
 
 	route.Delete(adminAndMemperRoutes, projectHandler)
+	//Task route
 
+	route.CreateTaskRoute(adminAndMemperRoutes, taskHandler)
+
+	route.EditTaskRoute(adminAndMemperRoutes, taskHandler)
+
+	route.DeleteTaskRoute(adminAndMemperRoutes, taskHandler)
 	return &App{
 		DB:     db,
 		Router: r,
