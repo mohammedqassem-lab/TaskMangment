@@ -1,6 +1,7 @@
 package service
 
 import (
+	model "TaskMangment/Internal/Model"
 	repositry "TaskMangment/Internal/Repositry"
 	"TaskMangment/Internal/dto"
 	"context"
@@ -41,4 +42,7 @@ func (t *TaskService) Edit(ctx context.Context, Task *dto.EditTask) error {
 }
 func (t *TaskService) Delete(ctx context.Context, id int64) error {
 	return t.repo.Delete(ctx, id)
+}
+func (t *TaskService) GetAll(ctx context.Context, FilterTask dto.TaskFilter) ([]*model.Task, error) {
+	return t.repo.GetAll(ctx, FilterTask)
 }

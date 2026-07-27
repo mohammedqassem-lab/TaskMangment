@@ -8,7 +8,7 @@ type Task struct {
 	Titel          string
 	Description    string
 	Parent_task_id int64
-	status         string
+	Status         string
 	Priority       string
 	AssigneeId     int64
 	CreatedBy      int64

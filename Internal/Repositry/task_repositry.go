@@ -1,10 +1,13 @@
 package repositry
 
 import (
+	model "TaskMangment/Internal/Model"
 	"TaskMangment/Internal/dto"
 	"context"
 	"database/sql"
 	"fmt"
+	"strconv"
+	"strings"
 )
 
 type TaskRepository struct {
@@ -15,6 +18,93 @@ func GetNewTaskRepository(db *sql.DB) *TaskRepository {
 	return &TaskRepository{
 		db: db,
 	}
+}
+func BuildQuery(taskFilter dto.TaskFilter) (string, []any) {
+	query := `
+SELECT
+	id,
+	project_id,
+	title,
+	description,
+	status,
+	priority,
+	parent_task_id,
+	assignee_id,
+	created_by,
+	due_date,
+	created_at,
+	updated_at
+FROM task
+WHERE 1 = 1`
+
+	args := []any{}
+	index := 1
+
+	if taskFilter.ProjectId != 0 {
+		query += " AND project_id = $" + strconv.Itoa(index)
+		args = append(args, taskFilter.ProjectId)
+		index++
+	}
+
+	if taskFilter.AssigneeId != 0 {
+		query += " AND assignee_id = $" + strconv.Itoa(index)
+		args = append(args, taskFilter.AssigneeId)
+		index++
+	}
+
+	if taskFilter.Priorty != "" {
+		query += " AND priority = $" + strconv.Itoa(index)
+		args = append(args, taskFilter.Priorty)
+		index++
+	}
+
+	if taskFilter.Status != "" {
+		query += " AND status = $" + strconv.Itoa(index)
+		args = append(args, taskFilter.Status)
+		index++
+	}
+
+	if taskFilter.Serch != "" {
+		query += " AND (title ILIKE $" + strconv.Itoa(index) +
+			" OR description ILIKE $" + strconv.Itoa(index) + ")"
+
+		args = append(args, "%"+taskFilter.Serch+"%")
+		index++
+	}
+
+	// Sorting
+	sortColumn := "created_at"
+
+	switch taskFilter.SortBy {
+	case "priority":
+		sortColumn = "priority"
+	case "title":
+		sortColumn = "title"
+	case "due_date":
+		sortColumn = "due_date"
+	}
+
+	order := "ASC"
+	if strings.EqualFold(taskFilter.Order, "DESC") {
+		order = "DESC"
+	}
+
+	query += " ORDER BY " + sortColumn + " " + order
+
+	// Pagination
+	if taskFilter.Limit > 0 {
+		query += " LIMIT $" + strconv.Itoa(index)
+		args = append(args, taskFilter.Limit)
+		index++
+	}
+
+	if taskFilter.Offset > 0 {
+		query += " OFFSET $" + strconv.Itoa(index)
+		args = append(args, taskFilter.Offset)
+		index++
+	}
+
+	return query, args
 }
 func (r *TaskRepository) CheckProject(ctx context.Context, projectId, workspaceId int64) error {
 	query := `
@@ -175,4 +265,28 @@ func (r *TaskRepository) Delete(ctx context.Context, Id int64) error {
 		return err
 	}
 	return nil
+}
+func (r *TaskRepository) GetAll(ctx context.Context, TaskFilter dto.TaskFilter) ([]*model.Task, error) {
+	qeury, args := BuildQuery(TaskFilter)
+	rows, err := r.db.QueryContext(ctx, qeury, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tasks []*model.Task
+	for rows.Next() {
+		var task model.Task
+		err := rows.Scan(&task.Id, &task.ProjectId, &task.Titel, &task.Description, &task.Status, &task.Priority, &task.Parent_task_id,
+			&task.AssigneeId, &task.CreatedBy, &task.Due_date, &task.CreatedAt, &task.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		tasks = append(tasks, &task)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return tasks, nil
 }

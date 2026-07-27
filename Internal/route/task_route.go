@@ -15,3 +15,6 @@ func EditTaskRoute(r *gin.RouterGroup, taskHandler *handler.TaskHandler) {
 func DeleteTaskRoute(r *gin.RouterGroup, taskHandler *handler.TaskHandler) {
 	r.DELETE("Task/:id/Delete/:task_id", taskHandler.Delete)
 }
+func GetAllRoute(r *gin.RouterGroup, taskHandler *handler.TaskHandler) {
+	r.GET("Task/:id/GetAll", taskHandler.GetAll)
+}

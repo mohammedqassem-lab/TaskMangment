@@ -118,5 +118,20 @@ func (h *TaskHandler) Delete(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"massage": "task Deleted",
 	})
-
+}
+func (h *TaskHandler) GetAll(c *gin.Context) {
+	var filter dto.TaskFilter
+	err := c.ShouldBindQuery(&filter)
+	if err != nil {
+		c.JSON(400, nil)
+	}
+	Tasks, err := h.TaskService.GetAll(c, filter)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"massage": "internal server error",
+			"error":   err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, Tasks)
 }

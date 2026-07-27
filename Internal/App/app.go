@@ -96,6 +96,8 @@ func New() (*App, error) {
 	route.EditTaskRoute(adminAndMemperRoutes, taskHandler)
 
 	route.DeleteTaskRoute(adminAndMemperRoutes, taskHandler)
+
+	route.GetAllRoute(adminAndMemperRoutes, taskHandler)
 	return &App{
 		DB:     db,
 		Router: r,
