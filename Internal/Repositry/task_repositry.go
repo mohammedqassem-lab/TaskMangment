@@ -295,3 +295,51 @@ func (r *TaskRepository) GetAll(ctx context.Context, TaskFilter dto.TaskFilter) 
 
 	return tasks, nil
 }
+func (r *TaskRepository) GetOverDueTasks(ctx context.Context) ([]*int64, error) {
+	query := `SELECT id from task
+	where due_date < now()
+	AND status!='Done'
+	AND status!='Overdue'`
+	rows, err := r.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tasks []*int64
+	for rows.Next() {
+		var task int64
+		err := rows.Scan(&task)
+		if err != nil {
+			return nil, err
+		}
+		tasks = append(tasks, &task)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return tasks, nil
+}
+func (r *TaskRepository) MakeTaskOverDeue(ctx context.Context, id *int64) error {
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	query := `UPDATE task
+	SET status = 'Overdue',version=version+1,updated_at=now()
+	WHERE id = $1`
+	_, err = tx.ExecContext(ctx, query, id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	query = `INSERT INTO TaskHistory (task_id, action, changed_by, field_name, old_value, new_value)
+	VALUES ($1, $2,$3,$4,$5,$6);`
+	_, err = tx.ExecContext(ctx, query, id, "update", 1, "status", "Todo or InProgress", "Overdue")
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	tx.Commit()
+	return nil
+}

@@ -46,3 +46,17 @@ func (t *TaskService) Delete(ctx context.Context, id int64) error {
 func (t *TaskService) GetAll(ctx context.Context, FilterTask dto.TaskFilter) ([]*model.Task, error) {
 	return t.repo.GetAll(ctx, FilterTask)
 }
+func (t *TaskService) MakeTaskOverDeue(ctx context.Context) error {
+	ids, err := t.repo.GetOverDueTasks(ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, id := range ids {
+		if err := t.repo.MakeTaskOverDeue(ctx, id); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

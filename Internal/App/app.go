@@ -6,7 +6,9 @@ import (
 	repositry "TaskMangment/Internal/Repositry"
 	service "TaskMangment/Internal/Service"
 	"TaskMangment/Internal/handler"
-	"TaskMangment/Internal/route"
+	route "TaskMangment/Internal/route"
+	"TaskMangment/Internal/worker"
+	"context"
 	"database/sql"
 
 	"github.com/gin-gonic/gin"
@@ -15,10 +17,10 @@ import (
 type App struct {
 	DB     *sql.DB
 	Router *gin.Engine
+	Cancel context.CancelFunc
 }
 
 func New() (*App, error) {
-
 	db, err := database.ConnectToDb()
 	if err != nil {
 		return nil, err
@@ -27,79 +29,76 @@ func New() (*App, error) {
 	// Repositories
 	userRepo := repositry.GetNewUserRepositry(db)
 	workspaceRepo := repositry.GetNewWorkspaceRepository(db)
-	WorkspaceMemberRepo := repositry.GetNewWorkspaceMemberRepository(db)
-	ProjectRepository := repositry.GetNewProjectRepository(db)
-	TaskRepositry := repositry.GetNewTaskRepository(db)
+	workspaceMemberRepo := repositry.GetNewWorkspaceMemberRepository(db)
+	projectRepo := repositry.GetNewProjectRepository(db)
+	taskRepo := repositry.GetNewTaskRepository(db)
 
 	// Services
 	userService := service.NewUserService(userRepo)
 	workspaceService := service.NewWorkspaceService(workspaceRepo)
-	workspaceMemberService := service.NewWorkspaceMemberService(WorkspaceMemberRepo)
-	ProjectService := service.NewProjectService(ProjectRepository)
-	TaskService := service.NewTaskService(TaskRepositry)
+	workspaceMemberService := service.NewWorkspaceMemberService(workspaceMemberRepo)
+	projectService := service.NewProjectService(projectRepo)
+	taskService := service.NewTaskService(taskRepo)
 
 	// Handlers
 	userHandler := handler.NewUserHandler(*userService)
 	workspaceHandler := handler.NewWorkspaceHandler(*workspaceService)
 	workspaceMemberHandler := handler.NewWorkspaceMemberHandler(*workspaceMemberService)
-	projectHandler := handler.NewProjectHandler(*ProjectService)
-	taskHandler := handler.NewTaskHandler(*TaskService)
+	projectHandler := handler.NewProjectHandler(*projectService)
+	taskHandler := handler.NewTaskHandler(*taskService)
 
 	// Router
 	r := gin.Default()
 
 	r.Use(middelware.ErrorMiddleware())
 
-	authRoutes := r.Group("")
+	authRoutes := r.Group("/")
 	authRoutes.Use(middelware.AuthMiddleeare())
 
-	AdminRoutes := authRoutes.Group("")
-	AdminRoutes.Use(middelware.RequireRole(workspaceRepo, "Admin"))
+	adminRoutes := authRoutes.Group("/")
+	adminRoutes.Use(middelware.RequireRole(workspaceRepo, "Admin"))
 
-	adminAndMemperRoutes := authRoutes.Group("")
-	adminAndMemperRoutes.Use(middelware.RequireRole(workspaceRepo, "Admin", "Member"))
-	//Account Routes
+	adminAndMemberRoutes := authRoutes.Group("/")
+	adminAndMemberRoutes.Use(middelware.RequireRole(workspaceRepo, "Admin", "Member"))
+
+	// User Routes
 	route.LoginUserRoutes(r, userHandler)
-
 	route.RegisterUserRoutes(r, userHandler)
-	//Workspace Routes
+
+	// Workspace Routes
 	route.CreateWorkspaceRoutes(authRoutes, workspaceHandler)
-
 	route.GetAllWorkspaceRoutes(authRoutes, workspaceHandler)
+	route.UpdateWorkspaceRoutes(adminRoutes, workspaceHandler)
+	route.DeleteWorkspaceRoutes(adminRoutes, workspaceHandler)
 
-	route.UpdateWorkspaceRoutes(AdminRoutes, workspaceHandler)
+	// Workspace Member Routes
+	route.InviteMemberRoutes(adminRoutes, workspaceMemberHandler)
+	route.GetWorkspaceMembersRoutes(adminRoutes, workspaceMemberHandler)
+	route.UpdateMemberRoleRoutes(adminRoutes, workspaceMemberHandler)
+	route.DeleteMemberRoutes(adminRoutes, workspaceMemberHandler)
 
-	route.DeleteWorkspaceRoutes(AdminRoutes, workspaceHandler)
-	//Workspace Member Routes
-	route.InviteMemberRoutes(AdminRoutes, workspaceMemberHandler)
-
-	route.GetWorkspaceMembersRoutes(AdminRoutes, workspaceMemberHandler)
-
-	route.UpdateMemberRoleRoutes(AdminRoutes, workspaceMemberHandler)
-
-	route.DeleteMemberRoutes(AdminRoutes, workspaceMemberHandler)
-	//project route
-
-	route.CreateProject(adminAndMemperRoutes, projectHandler)
-
+	// Project Routes
+	route.CreateProject(adminAndMemberRoutes, projectHandler)
 	route.GetById(authRoutes, projectHandler)
+	route.Get(adminAndMemberRoutes, projectHandler)
+	route.Update(adminAndMemberRoutes, projectHandler)
+	route.Delete(adminAndMemberRoutes, projectHandler)
 
-	route.Get(adminAndMemperRoutes, projectHandler)
+	// Task Routes
+	route.CreateTaskRoute(adminAndMemberRoutes, taskHandler)
+	route.EditTaskRoute(adminAndMemberRoutes, taskHandler)
+	route.DeleteTaskRoute(adminAndMemberRoutes, taskHandler)
+	route.GetAllRoute(adminAndMemberRoutes, taskHandler)
 
-	route.Update(adminAndMemperRoutes, projectHandler)
+	// Worker
+	ctx, cancel := context.WithCancel(context.Background())
 
-	route.Delete(adminAndMemperRoutes, projectHandler)
-	//Task route
+	overdueWorker := worker.NewOverDueWorker(*taskService)
+	go overdueWorker.Start(ctx)
 
-	route.CreateTaskRoute(adminAndMemperRoutes, taskHandler)
-
-	route.EditTaskRoute(adminAndMemperRoutes, taskHandler)
-
-	route.DeleteTaskRoute(adminAndMemperRoutes, taskHandler)
-
-	route.GetAllRoute(adminAndMemperRoutes, taskHandler)
 	return &App{
 		DB:     db,
 		Router: r,
+		Cancel: cancel,
 	}, nil
 }

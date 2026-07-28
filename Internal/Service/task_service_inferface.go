@@ -11,4 +11,5 @@ type ITaskService interface {
 	Edit(ctx context.Context, Task *dto.EditTask) error
 	Delete(ctx context.Context, id int64) error
 	GetAll(ctx context.Context, FilterTask dto.TaskFilter) ([]*model.Task, error)
+	MakeTaskOverDeue(ctx context.Context) error
 }
