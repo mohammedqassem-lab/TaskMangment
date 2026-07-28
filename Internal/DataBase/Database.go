@@ -8,11 +8,11 @@ import (
 )
 
 const (
-	host     = "localhost"
-	port     = 5433
+	host     = "postgres-db"
+	port     = 5432
 	user     = "postgres"
-	password = "Moqr.Login"
-	dbname   = "TaskManegmintSystem"
+	password = "123456"
+	dbname   = "task_management"
 )
 
 func ConnectToDb() (*sql.DB, error) {
