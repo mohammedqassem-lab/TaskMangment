@@ -1,0 +1,11 @@
+drop idx_users_email;
+drop idx_workspace_id;
+drop idx_workspace_id_version;
+drop idx_workspaces_member_id_user_id;
+drop idx_workspaces_member_workspace_id_user_id;
+drop idx_task_project_id_priority;
+drop idx_task_project_id_status;
+drop idx_task_status_priority;
+drop idx_task_id_version;
+drop idx_Project_id;
+drop idx_Project_id_version;
