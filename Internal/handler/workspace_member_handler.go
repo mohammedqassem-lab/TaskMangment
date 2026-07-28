@@ -88,7 +88,7 @@ func (h *WorkspaceMemberHandler) UpdateMemberRole(c *gin.Context) {
 		})
 		return
 	}
-	err = h.workspaceMemberService.UpdateMemberRole(c.Request.Context(), workspaceID, req.UserID, req.Role)
+	err = h.workspaceMemberService.UpdateMemberRole(c.Request.Context(), workspaceID, req)
 	if err != nil {
 		c.JSON(404, gin.H{
 			"error":   err.Error(),

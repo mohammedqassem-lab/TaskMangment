@@ -8,6 +8,7 @@ type Project struct {
 	Name        string
 	Description string
 	CreatedBy   int64
+	Version     int64
 	createdAt   time.Time
 	updatedAt   time.Time
 }

@@ -5,4 +5,5 @@ type WorkspaceMember struct {
 	WorkspaceID int64  `json:"workspace_id"`
 	UserID      int64  `json:"user_id"`
 	Role        string `json:"role"`
+	Version     int64  `json:"version"`
 }

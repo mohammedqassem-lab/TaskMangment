@@ -12,6 +12,7 @@ type Task struct {
 	Priority       string
 	AssigneeId     int64
 	CreatedBy      int64
+	Version        int64
 	Due_date       time.Time
 	CreatedAt      time.Time
 	UpdatedAt      time.Time

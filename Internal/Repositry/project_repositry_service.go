@@ -5,6 +5,7 @@ import (
 	"TaskMangment/Internal/dto"
 	"context"
 	"database/sql"
+	"fmt"
 )
 
 type ProjectRepository struct {
@@ -73,12 +74,18 @@ func (r *ProjectRepository) Get(ctx context.Context, workspaceId int64) ([]*dto.
 func (r *ProjectRepository) Update(ctx context.Context, project *dto.UpdateProject) error {
 	query := `UPDATE Project set
 	name =$1,
-	description=$2
+	description=$2,
+	version=version+1
 	where id = $3
+	AND version=$4
 	`
-	_, err := r.db.ExecContext(ctx, query, project.Name, project.Description, project.Id)
+	result, err := r.db.ExecContext(ctx, query, project.Name, project.Description, project.Id, project.Version)
 	if err != nil {
 		return err
+	}
+	row, _ := result.RowsAffected()
+	if row == 0 {
+		return fmt.Errorf("tha data was changed")
 	}
 	return nil
 }

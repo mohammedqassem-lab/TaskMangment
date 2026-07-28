@@ -6,5 +6,6 @@ type EditTask struct {
 	Description string `json:"description"`
 	Status      string `json:"status"`
 	Priority    string `json:"priorty"`
+	Version     int64  `json:"version"`
 	UserId      int64
 }

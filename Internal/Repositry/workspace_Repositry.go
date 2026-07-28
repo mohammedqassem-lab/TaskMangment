@@ -4,6 +4,7 @@ import (
 	model "TaskMangment/Internal/Model"
 	"context"
 	"database/sql"
+	"fmt"
 )
 
 type WorkspaceRepository struct {
@@ -121,11 +122,18 @@ func (r *WorkspaceRepository) GetAllWorkspace(ctx context.Context) ([]*model.Wor
 func (r *WorkspaceRepository) UpdateWorkspace(ctx context.Context, workspace *model.Workspace) error {
 	query := `
 	UPDATE workspaces
-	SET name = $1, description = $2
-	WHERE id = $3
+	SET name = $1, description = $2,version=version+1
+	WHERE id = $3 AND version=$4
 	`
-	_, err := r.db.ExecContext(ctx, query, workspace.Name, workspace.Description, workspace.ID)
-	return err
+	result, err := r.db.ExecContext(ctx, query, workspace.Name, workspace.Description, workspace.ID, workspace.Version)
+	if err != nil {
+		return err
+	}
+	row, _ := result.RowsAffected()
+	if row == 0 {
+		return fmt.Errorf("the date has changed")
+	}
+	return nil
 }
 func (r *WorkspaceRepository) DeleteWorkspace(ctx context.Context, workspaceID int64) error {
 	query := `

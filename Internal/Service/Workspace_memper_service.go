@@ -29,8 +29,8 @@ func (s *WorkspaceMemberService) InviteMember(ctx context.Context, workspaceID i
 func (s *WorkspaceMemberService) GetWorkspaceMembers(ctx context.Context, workspaceID int64) ([]*dto.GetWorkspaceMembersDto, error) {
 	return s.repo.GetWorkspaceMembers(ctx, workspaceID)
 }
-func (s *WorkspaceMemberService) UpdateMemberRole(ctx context.Context, workspaceID, userID int64, role string) error {
-	return s.repo.UpdateMemberRole(ctx, workspaceID, userID, role)
+func (s *WorkspaceMemberService) UpdateMemberRole(ctx context.Context, workspaceID int64, memper dto.UpdateMemberRoleDto) error {
+	return s.repo.UpdateMemberRole(ctx, workspaceID, memper)
 }
 func (s *WorkspaceMemberService) DeleteMember(ctx context.Context, workspaceID, userID int64) error {
 	return s.repo.DeleteMember(ctx, workspaceID, userID)

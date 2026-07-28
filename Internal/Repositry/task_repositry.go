@@ -175,10 +175,10 @@ func (r *TaskRepository) Update(ctx context.Context, Task *dto.EditTask) error {
 		return err
 	}
 	var task dto.EditTask
-	query := `select id,title,description,status,priority from task
-	WHERE id = $1
+	query := `select id,title,description,status,priority,version from task
+	WHERE id = $1 AND version=$2
 	`
-	err = tx.QueryRowContext(ctx, query, Task.Id).Scan(&task.Id, &task.Titel, &task.Description, &task.Status, &task.Priority)
+	err = tx.QueryRowContext(ctx, query, Task.Id, Task.Version).Scan(&task.Id, &task.Titel, &task.Description, &task.Status, &task.Priority)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -187,8 +187,8 @@ func (r *TaskRepository) Update(ctx context.Context, Task *dto.EditTask) error {
 	query = `
 	UPDATE task
 	SET title = $1, description = $2, 
-	status = $3, priority = $4
-	WHERE id = $5
+	status = $3, priority = $4,version=version+1
+	WHERE id = $5 AND version=$6
 	`
 	if Task.Status == "" {
 		Task.Status = task.Status
@@ -196,10 +196,15 @@ func (r *TaskRepository) Update(ctx context.Context, Task *dto.EditTask) error {
 	if Task.Priority == "" {
 		Task.Priority = task.Priority
 	}
-	_, err = tx.ExecContext(ctx, query, Task.Titel, Task.Description, Task.Status, Task.Priority, Task.Id)
+	result, err := tx.ExecContext(ctx, query, Task.Titel, Task.Description, Task.Status, Task.Priority, Task.Id, Task.Version)
 	if err != nil {
 		tx.Rollback()
 		return err
+	}
+	row, _ := result.RowsAffected()
+	if row == 0 {
+		tx.Rollback()
+		return fmt.Errorf("tha data was changed")
 	}
 	if Task.Titel != "" {
 		query = `INSERT INTO TaskHistory (task_id, action, changed_by, field_name, old_value, new_value)

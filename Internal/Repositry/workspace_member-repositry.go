@@ -5,6 +5,7 @@ import (
 	"TaskMangment/Internal/dto"
 	"context"
 	"database/sql"
+	"fmt"
 )
 
 type WorkspaceMemberRepository struct {
@@ -54,15 +55,20 @@ func (r *WorkspaceMemberRepository) GetWorkspaceMembers(ctx context.Context, wor
 
 	return members, nil
 }
-func (r *WorkspaceMemberRepository) UpdateMemberRole(ctx context.Context, workspaceID, userID int64, role string) error {
+func (r *WorkspaceMemberRepository) UpdateMemberRole(ctx context.Context, workspaceID int64, memper dto.UpdateMemberRoleDto) error {
 	query := `
 	UPDATE workspaces_member
-	SET role = $1
-	WHERE workspace_id = $2 AND user_id = $3;
+	SET role = $1,
+	version=version+1
+	WHERE workspace_id = $2 AND user_id = $3 AND version=$4;
 	`
-	_, err := r.db.ExecContext(ctx, query, role, workspaceID, userID)
+	result, err := r.db.ExecContext(ctx, query, memper.Role, workspaceID, memper.UserID, memper.Version)
 	if err != nil {
 		return err
+	}
+	row, _ := result.RowsAffected()
+	if row == 0 {
+		return fmt.Errorf("tha data has changed")
 	}
 	return nil
 }

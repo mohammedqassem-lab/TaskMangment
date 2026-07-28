@@ -8,4 +8,5 @@ type Workspace struct {
 	Description string
 	OwnerID     int64
 	CreatedAt   time.Time
+	Version     int64
 }
