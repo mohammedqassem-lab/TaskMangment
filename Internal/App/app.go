@@ -69,6 +69,7 @@ func New() (*App, error) {
 	// User Routes
 	route.LoginUserRoutes(r, userHandler)
 	route.RegisterUserRoutes(r, userHandler)
+	route.RefreshTokenRoute(r, userHandler)
 
 	// Workspace Routes
 	route.CreateWorkspaceRoutes(authRoutes, workspaceHandler)

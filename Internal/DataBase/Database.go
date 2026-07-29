@@ -15,6 +15,17 @@ const (
 	dbname   = "task_management"
 )
 
+/*
+const (
+
+	host     = "localhost"
+	port     = 5433
+	user     = "postgres"
+	password = "Moqr.Login"
+	dbname   = "TaskManegmintSystem"
+
+)
+*/
 func ConnectToDb() (*sql.DB, error) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",

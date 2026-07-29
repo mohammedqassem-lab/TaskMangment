@@ -16,7 +16,7 @@ func GetNewUserRepositry(db *sql.DB) *UserRepositry {
 	}
 }
 func (r *UserRepositry) Create(ctx context.Context, user *model.User) error {
-	q := "INSERT INTO users(name,email,Hashpassword) VALUES($1,$2,$3) RETURNING id"
+	q := `INSERT INTO users(name,email,Hashpassword) VALUES($1,$2,$3) RETURNING id`
 	err := r.db.QueryRowContext(ctx, q, user.Name, user.Email, user.Hashpassword).Scan(&user.Id)
 	if err != nil {
 		return err
@@ -24,7 +24,7 @@ func (r *UserRepositry) Create(ctx context.Context, user *model.User) error {
 	return nil
 }
 func (r *UserRepositry) GetByEmail(ctx context.Context, email string) (*model.User, error) {
-	q := "SELECT id,name,email,Hashpassword FROM users WHERE email=$1"
+	q := `SELECT id,name,email,Hashpassword FROM users WHERE email=$1`
 	row := r.db.QueryRowContext(ctx, q, email)
 	var user model.User
 	err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Hashpassword)
@@ -32,4 +32,20 @@ func (r *UserRepositry) GetByEmail(ctx context.Context, email string) (*model.Us
 		return nil, err
 	}
 	return &user, nil
+}
+
+func (r *UserRepositry) SaveRefreshToken(ctx context.Context, token model.RefreshToken) error {
+	q := `INSERT INTO refresh_tokens(user_id,token,expires_at) VALUES($1,$2,$3)`
+	_, err := r.db.ExecContext(ctx, q, token.UserId, token.Token, token.ExpiresAt)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (r *UserRepositry) ValidateRefreshToken(ctx context.Context, token string) (model.RefreshToken, error) {
+	q := `SELECT id,user_id,token,expires_at FROM refresh_tokens WHERE revoked=false AND token=$1`
+	row := r.db.QueryRowContext(ctx, q, token)
+	var RefreshToken model.RefreshToken
+	err := row.Scan(&RefreshToken.Id, &RefreshToken.UserId, &RefreshToken.Token, &RefreshToken.ExpiresAt)
+	return RefreshToken, err
 }

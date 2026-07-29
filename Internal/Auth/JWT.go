@@ -2,6 +2,8 @@ package auth
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"strconv"
 	"time"
 
@@ -57,4 +59,16 @@ func ValidateToken(token string) (*MyCustomClaims, error) {
 	}
 
 	return parsedClaims, nil
+}
+
+func GenerateRefreshToken() (string, error) {
+
+	bytes := make([]byte, 32)
+
+	_, err := rand.Read(bytes)
+	if err != nil {
+		return "", err
+	}
+
+	return base64.RawURLEncoding.EncodeToString(bytes), nil
 }

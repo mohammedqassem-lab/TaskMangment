@@ -6,6 +6,9 @@ definitions:
         type: string
       user_id:
         type: integer
+    required:
+    - role
+    - user_id
     type: object
   dto.AddProjectRequest:
     properties:
@@ -37,6 +40,12 @@ definitions:
       workSpaceId:
         format: int64
         type: integer
+    required:
+    - assigneeid
+    - description
+    - due_date
+    - project_id
+    - titel
     type: object
   dto.CreateWorkspaceRequest:
     properties:
@@ -44,6 +53,9 @@ definitions:
         type: string
       name:
         type: string
+    required:
+    - description
+    - name
     type: object
   dto.EditTask:
     properties:
@@ -62,6 +74,13 @@ definitions:
         type: integer
       version:
         type: integer
+    required:
+    - description
+    - id
+    - priorty
+    - status
+    - titel
+    - version
     type: object
   dto.LoginDto:
     properties:
@@ -81,6 +100,10 @@ definitions:
         type: integer
       version:
         type: integer
+    required:
+    - role
+    - user_id
+    - version
     type: object
   dto.UpdateProject:
     properties:
@@ -92,6 +115,9 @@ definitions:
         type: string
       version:
         type: integer
+    required:
+    - id
+    - version
     type: object
   dto.UpdateWorkspaceDto:
     properties:
@@ -101,6 +127,8 @@ definitions:
         type: string
       version:
         type: integer
+    required:
+    - version
     type: object
   dto.UserDto:
     properties:
@@ -385,6 +413,23 @@ paths:
       summary: Create a new project in the workspace
       tags:
       - Project
+  /refreshToken/{token}:
+    post:
+      consumes:
+      - application/json
+      description: refresh youer jwt
+      parameters:
+      - description: RefreshToken
+        in: path
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: RefreshToken
+      tags:
+      - Authentication
   /register:
     post:
       consumes:

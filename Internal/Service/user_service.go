@@ -4,7 +4,10 @@ import (
 	auth "TaskMangment/Internal/Auth"
 	model "TaskMangment/Internal/Model"
 	repositry "TaskMangment/Internal/Repositry"
+	"TaskMangment/Internal/dto"
 	"context"
+	"fmt"
+	"time"
 
 	bycrypt "golang.org/x/crypto/bcrypt"
 )
@@ -26,18 +29,49 @@ func (s *UserService) Register(ctx context.Context, user model.User) error {
 	user.Hashpassword = string(hashpassword)
 	return s.repo.Create(ctx, &user)
 }
-func (s *UserService) Login(ctx context.Context, loginDto model.User) (string, error) {
+func (s *UserService) Login(ctx context.Context, loginDto model.User) (dto.TokenResponce, error) {
 	user, err := s.repo.GetByEmail(ctx, loginDto.Email)
+	var respose dto.TokenResponce
 	if err != nil {
-		return "", err
+		return respose, err
 	}
 	err = bycrypt.CompareHashAndPassword([]byte(user.Hashpassword), []byte(loginDto.Hashpassword))
 	if err != nil {
-		return "", err
+		return respose, err
 	}
-	jwtToken, err := auth.CreateToken(int(user.Id))
+	respose.Accsestoken, err = auth.CreateToken(int(user.Id))
 	if err != nil {
-		return "", err
+		return respose, err
 	}
-	return jwtToken, nil
+	respose.RefreshToken, err = auth.GenerateRefreshToken()
+	if err != nil {
+		return respose, err
+	}
+	refreshToken := model.RefreshToken{
+		Token:     respose.RefreshToken,
+		UserId:    user.Id,
+		ExpiresAt: time.Now().Add(30 * 24 * time.Hour),
+	}
+	err = s.repo.SaveRefreshToken(ctx, refreshToken)
+	return respose, nil
+}
+func (s *UserService) RefreshToken(ctx context.Context, token string) (dto.TokenResponce, error) {
+	var t dto.TokenResponce
+	refreshToken, err := s.repo.ValidateRefreshToken(ctx, token)
+	if err != nil {
+		return t, err
+	}
+	if refreshToken.ExpiresAt.Before(time.Now()) {
+		return t, fmt.Errorf("the token is expired")
+	}
+
+	t.Accsestoken, err = auth.CreateToken(int(refreshToken.UserId))
+	t.RefreshToken, err = auth.GenerateRefreshToken()
+	model := model.RefreshToken{
+		UserId:    refreshToken.UserId,
+		ExpiresAt: time.Now().Add(30 * 24 * time.Hour),
+		Token:     t.RefreshToken,
+	}
+	err = s.repo.SaveRefreshToken(ctx, model)
+	return t, err
 }

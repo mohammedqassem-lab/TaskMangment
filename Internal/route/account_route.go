@@ -13,3 +13,6 @@ func RegisterUserRoutes(r *gin.Engine, userHandler *handler.UserHandler) {
 func LoginUserRoutes(r *gin.Engine, userHandler *handler.UserHandler) {
 	r.POST("/login", userHandler.Login)
 }
+func RefreshTokenRoute(r *gin.Engine, userHandler *handler.UserHandler) {
+	r.POST("/refreshToken/:token", userHandler.RefreshToken)
+}

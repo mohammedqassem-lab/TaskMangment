@@ -1,0 +1,1 @@
+Drop table if exists refresh_tokens;

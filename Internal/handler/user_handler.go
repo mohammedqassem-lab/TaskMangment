@@ -4,6 +4,7 @@ import (
 	model "TaskMangment/Internal/Model"
 	service "TaskMangment/Internal/Service"
 	"TaskMangment/Internal/dto"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -54,7 +55,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 	})
 }
 
-// /Login godoc
+// Login godoc
 // @Summary Login
 // @Description Sign In to youer account
 // @Tags Authentication
@@ -85,5 +86,36 @@ func (h *UserHandler) Login(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"token": token,
+	})
+}
+
+// RefreshToken godoc
+// @Summary RefreshToken
+// @Description refresh youer jwt
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param token path string true "RefreshToken"
+// @Router /refreshToken/{token} [post]
+func (h *UserHandler) RefreshToken(c *gin.Context) {
+	token := c.Param("token")
+	if token == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Bad Request",
+			"error":   "token is empty",
+		})
+		return
+	}
+	dto, err := h.userService.RefreshToken(c, token)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Bad Request",
+			"error":   err.Error(),
+		})
+		fmt.Println("erorr here2:", err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"token": dto,
 	})
 }

@@ -393,6 +393,31 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/refreshToken/{token}": {
+            "post": {
+                "description": "refresh youer jwt",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "RefreshToken",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "RefreshToken",
+                        "name": "token",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/register": {
             "post": {
                 "description": "Create a new user account",
@@ -698,6 +723,10 @@ const docTemplate = `{
     "definitions": {
         "dto.AddMemberDto": {
             "type": "object",
+            "required": [
+                "role",
+                "user_id"
+            ],
             "properties": {
                 "role": {
                     "type": "string"
@@ -724,6 +753,13 @@ const docTemplate = `{
         },
         "dto.AddTask": {
             "type": "object",
+            "required": [
+                "assigneeid",
+                "description",
+                "due_date",
+                "project_id",
+                "titel"
+            ],
             "properties": {
                 "assigneeid": {
                     "type": "integer"
@@ -755,6 +791,10 @@ const docTemplate = `{
         },
         "dto.CreateWorkspaceRequest": {
             "type": "object",
+            "required": [
+                "description",
+                "name"
+            ],
             "properties": {
                 "description": {
                     "type": "string"
@@ -766,6 +806,14 @@ const docTemplate = `{
         },
         "dto.EditTask": {
             "type": "object",
+            "required": [
+                "description",
+                "id",
+                "priorty",
+                "status",
+                "titel",
+                "version"
+            ],
             "properties": {
                 "description": {
                     "type": "string"
@@ -808,6 +856,11 @@ const docTemplate = `{
         },
         "dto.UpdateMemberRoleDto": {
             "type": "object",
+            "required": [
+                "role",
+                "user_id",
+                "version"
+            ],
             "properties": {
                 "role": {
                     "type": "string"
@@ -822,6 +875,10 @@ const docTemplate = `{
         },
         "dto.UpdateProject": {
             "type": "object",
+            "required": [
+                "id",
+                "version"
+            ],
             "properties": {
                 "description": {
                     "type": "string"
@@ -839,6 +896,9 @@ const docTemplate = `{
         },
         "dto.UpdateWorkspaceDto": {
             "type": "object",
+            "required": [
+                "version"
+            ],
             "properties": {
                 "description": {
                     "type": "string"
