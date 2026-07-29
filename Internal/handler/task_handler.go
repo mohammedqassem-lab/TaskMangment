@@ -18,6 +18,17 @@ func NewTaskHandler(TaskService service.TaskService) *TaskHandler {
 		TaskService: TaskService,
 	}
 }
+
+// CreateTask godoc
+// @Summary Create a new task in the workspace
+// @Description Create a new task in the workspace
+// @Tags Task
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "WorkSpace ID"
+// @Param request body dto.AddTask true "AddTask Request"
+// @Router /Task/{id}/Create [post]
 func (h *TaskHandler) Create(c *gin.Context) {
 	var requst dto.AddTask
 	workspaceID := c.Param("id")
@@ -63,6 +74,17 @@ func (h *TaskHandler) Create(c *gin.Context) {
 		"massage": "task Created",
 	})
 }
+
+// EditTask godoc
+// @Summary Edit the task in the workspace
+// @Description Edit the task in the workspace
+// @Tags Task
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "WorkSpace ID"
+// @Param request body dto.EditTask true "EditTask Request"
+// @Router /Task/{id}/Edit [put]
 func (h *TaskHandler) Edit(c *gin.Context) {
 	var requst dto.EditTask
 	if err := c.ShouldBindJSON(&requst); err != nil {
@@ -98,6 +120,17 @@ func (h *TaskHandler) Edit(c *gin.Context) {
 		"massage": "Task Updeted",
 	})
 }
+
+// DeleteTask godoc
+// @Summary Delete the task in the workspace
+// @Description Delete the task in the workspace
+// @Tags Task
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "WorkSpace ID"
+// @Param task_id path int true "WorkSpace ID"
+// @Router /Task/{id}/Delete/{task_id} [delete]
 func (h *TaskHandler) Delete(c *gin.Context) {
 	idstr := c.Param("task_id")
 	id, err := strconv.ParseInt(idstr, 10, 64)
@@ -119,6 +152,25 @@ func (h *TaskHandler) Delete(c *gin.Context) {
 		"massage": "task Deleted",
 	})
 }
+
+// GetTasks godoc
+// @Summary Get all the task in the workspace
+// @Description Get all the task in the workspace
+// @Tags Task
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "WorkSpace ID"
+// @Param status query string false "Task Status"
+// @Param ProjectId query int false "ProjectId Number"
+// @Param Priorty query string false "Task Priorty"
+// @Param AssigneeId query int false "AssigneeId"
+// @Param Serch query string false "Serch"
+// @Param SortBy query string false "SortBy"
+// @Param Order query string false "Order"
+// @Param Limit query int false "Limit Number"
+// @Param Offset query int false "Offset Number"
+// @Router /Task/{id}/GetAll [get]
 func (h *TaskHandler) GetAll(c *gin.Context) {
 	var filter dto.TaskFilter
 	err := c.ShouldBindQuery(&filter)

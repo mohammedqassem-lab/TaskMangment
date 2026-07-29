@@ -33,7 +33,8 @@ SELECT
 	created_by,
 	due_date,
 	created_at,
-	updated_at
+	updated_at,
+	version
 FROM task
 WHERE 1 = 1`
 
@@ -178,7 +179,7 @@ func (r *TaskRepository) Update(ctx context.Context, Task *dto.EditTask) error {
 	query := `select id,title,description,status,priority,version from task
 	WHERE id = $1 AND version=$2
 	`
-	err = tx.QueryRowContext(ctx, query, Task.Id, Task.Version).Scan(&task.Id, &task.Titel, &task.Description, &task.Status, &task.Priority)
+	err = tx.QueryRowContext(ctx, query, Task.Id, Task.Version).Scan(&task.Id, &task.Titel, &task.Description, &task.Status, &task.Priority, &task.Version)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -283,7 +284,7 @@ func (r *TaskRepository) GetAll(ctx context.Context, TaskFilter dto.TaskFilter) 
 	for rows.Next() {
 		var task model.Task
 		err := rows.Scan(&task.Id, &task.ProjectId, &task.Titel, &task.Description, &task.Status, &task.Priority, &task.Parent_task_id,
-			&task.AssigneeId, &task.CreatedBy, &task.Due_date, &task.CreatedAt, &task.UpdatedAt)
+			&task.AssigneeId, &task.CreatedBy, &task.Due_date, &task.CreatedAt, &task.UpdatedAt, &task.Version)
 		if err != nil {
 			return nil, err
 		}

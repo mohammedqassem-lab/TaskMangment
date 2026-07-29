@@ -95,7 +95,7 @@ func (r *WorkspaceRepository) GetWorkspaceByUserID(ctx context.Context, UserId i
 }
 func (r *WorkspaceRepository) GetAllWorkspace(ctx context.Context) ([]*model.Workspace, error) {
 	query := `
-	SELECT id, name, description, owner_id
+	SELECT id, name, description, owner_id, version
 	FROM workspaces;
 	`
 	rows, err := r.db.QueryContext(ctx, query)
@@ -107,7 +107,7 @@ func (r *WorkspaceRepository) GetAllWorkspace(ctx context.Context) ([]*model.Wor
 	var workspaces []*model.Workspace
 	for rows.Next() {
 		var workspace model.Workspace
-		err := rows.Scan(&workspace.ID, &workspace.Name, &workspace.Description, &workspace.OwnerID)
+		err := rows.Scan(&workspace.ID, &workspace.Name, &workspace.Description, &workspace.OwnerID, &workspace.Version)
 		if err != nil {
 			return nil, err
 		}
@@ -123,8 +123,9 @@ func (r *WorkspaceRepository) UpdateWorkspace(ctx context.Context, workspace *mo
 	query := `
 	UPDATE workspaces
 	SET name = $1, description = $2,version=version+1
-	WHERE id = $3 AND version=$4
+	WHERE id = $3 AND version=$4;
 	`
+	fmt.Println(workspace.Version)
 	result, err := r.db.ExecContext(ctx, query, workspace.Name, workspace.Description, workspace.ID, workspace.Version)
 	if err != nil {
 		return err

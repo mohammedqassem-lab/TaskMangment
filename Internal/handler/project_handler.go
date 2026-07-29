@@ -19,6 +19,17 @@ func NewProjectHandler(projectService service.ProjectService) *ProjectHandler {
 		projectService: projectService,
 	}
 }
+
+// CreateProject godoc
+// @Summary Create a new project in the workspace
+// @Description Create a new project in the workspace
+// @Tags Project
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "WorkSpace ID"
+// @Param request body dto.AddProjectRequest true "AddProjectRequest Request"
+// @Router /project/{id}/create [post]
 func (h *ProjectHandler) Create(c *gin.Context) {
 	var requst dto.AddProjectRequest
 	workspaceID := c.Param("id")
@@ -67,6 +78,7 @@ func (h *ProjectHandler) Create(c *gin.Context) {
 		"massage": "Project created",
 	})
 }
+
 func (h *ProjectHandler) GetById(c *gin.Context) {
 	idstr := c.Param("id")
 	id, err := strconv.ParseInt(idstr, 10, 64)
@@ -87,6 +99,16 @@ func (h *ProjectHandler) GetById(c *gin.Context) {
 	}
 	c.JSON(200, gin.H{"workspaces": workspaces})
 }
+
+// GetProjects godoc
+// @Summary get projects in the workspace
+// @Description get projects in the workspace
+// @Tags Project
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "WorkSpace ID"
+// @Router /Project/{id}/Get [get]
 func (h *ProjectHandler) Get(c *gin.Context) {
 	workspaceId := c.Param("id")
 	id, err := strconv.ParseInt(workspaceId, 10, 64)
@@ -115,6 +137,17 @@ func (h *ProjectHandler) Get(c *gin.Context) {
 		"projects": projects,
 	})
 }
+
+// UpdateProject godoc
+// @Summary update the project in the workspace
+// @Description update the project in the workspace
+// @Tags Project
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "WorkSpace ID"
+// @Param request body dto.UpdateProject true "UpdateProject Request"
+// @Router /Project/{id}/Update [put]
 func (h *ProjectHandler) Update(c *gin.Context) {
 	var model dto.UpdateProject
 	err := c.ShouldBindJSON(&model)
@@ -137,6 +170,17 @@ func (h *ProjectHandler) Update(c *gin.Context) {
 		"massage": "the Project Updeted",
 	})
 }
+
+// DeleteProject godoc
+// @Summary Delete the projects in the workspace
+// @Description Delete the projects in the workspace
+// @Tags Project
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "WorkSpace ID"
+// @Param projectid path int true "project ID"
+// @Router /Project/{id}/Delete/{projectid} [delete]
 func (h *ProjectHandler) Delete(c *gin.Context) {
 	idstr := c.Param("projectid")
 	id, err := strconv.ParseInt(idstr, 10, 64)

@@ -10,8 +10,11 @@ import (
 	"TaskMangment/Internal/worker"
 	"context"
 	"database/sql"
+	"log"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type App struct {
@@ -49,6 +52,8 @@ func New() (*App, error) {
 
 	// Router
 	r := gin.Default()
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.Use(middelware.ErrorMiddleware())
 
@@ -101,4 +106,14 @@ func New() (*App, error) {
 		Router: r,
 		Cancel: cancel,
 	}, nil
+}
+func (a *App) Shutdown() error {
+
+	log.Println("Stopping background workers...")
+
+	a.Cancel()
+
+	log.Println("Closing database connection...")
+
+	return a.DB.Close()
 }

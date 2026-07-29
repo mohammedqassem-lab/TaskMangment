@@ -1,0 +1,585 @@
+basePath: /
+definitions:
+  dto.AddMemberDto:
+    properties:
+      role:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  dto.AddProjectRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    required:
+    - description
+    - name
+    type: object
+  dto.AddTask:
+    properties:
+      assigneeid:
+        type: integer
+      createUserId:
+        format: int64
+        type: integer
+      description:
+        type: string
+      due_date:
+        type: string
+      parent_task_id:
+        type: integer
+      project_id:
+        type: integer
+      titel:
+        type: string
+      workSpaceId:
+        format: int64
+        type: integer
+    type: object
+  dto.CreateWorkspaceRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.EditTask:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      priorty:
+        type: string
+      status:
+        type: string
+      titel:
+        type: string
+      userId:
+        format: int64
+        type: integer
+      version:
+        type: integer
+    type: object
+  dto.LoginDto:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.UpdateMemberRoleDto:
+    properties:
+      role:
+        type: string
+      user_id:
+        type: integer
+      version:
+        type: integer
+    type: object
+  dto.UpdateProject:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      version:
+        type: integer
+    type: object
+  dto.UpdateWorkspaceDto:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      version:
+        type: integer
+    type: object
+  dto.UserDto:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  model.Workspace:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        format: int64
+        type: integer
+      name:
+        type: string
+      ownerID:
+        format: int64
+        type: integer
+      version:
+        format: int64
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: example@example.com
+    name: Mohammed
+  description: Task Management System API
+  license:
+    name: MIT
+  termsOfService: http://swagger.io/terms/
+  title: Task Management API
+  version: "1.0"
+paths:
+  /Project/{id}/Delete/{projectid}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete the projects in the workspace
+      parameters:
+      - description: WorkSpace ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: project ID
+        in: path
+        name: projectid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Delete the projects in the workspace
+      tags:
+      - Project
+  /Project/{id}/Get:
+    get:
+      consumes:
+      - application/json
+      description: get projects in the workspace
+      parameters:
+      - description: WorkSpace ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get projects in the workspace
+      tags:
+      - Project
+  /Project/{id}/Update:
+    put:
+      consumes:
+      - application/json
+      description: update the project in the workspace
+      parameters:
+      - description: WorkSpace ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: UpdateProject Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateProject'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: update the project in the workspace
+      tags:
+      - Project
+  /Task/{id}/Create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new task in the workspace
+      parameters:
+      - description: WorkSpace ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: AddTask Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddTask'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Create a new task in the workspace
+      tags:
+      - Task
+  /Task/{id}/Delete/{task_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete the task in the workspace
+      parameters:
+      - description: WorkSpace ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: WorkSpace ID
+        in: path
+        name: task_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Delete the task in the workspace
+      tags:
+      - Task
+  /Task/{id}/Edit:
+    put:
+      consumes:
+      - application/json
+      description: Edit the task in the workspace
+      parameters:
+      - description: WorkSpace ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: EditTask Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.EditTask'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Edit the task in the workspace
+      tags:
+      - Task
+  /Task/{id}/GetAll:
+    get:
+      consumes:
+      - application/json
+      description: Get all the task in the workspace
+      parameters:
+      - description: WorkSpace ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Task Status
+        in: query
+        name: status
+        type: string
+      - description: ProjectId Number
+        in: query
+        name: ProjectId
+        type: integer
+      - description: Task Priorty
+        in: query
+        name: Priorty
+        type: string
+      - description: AssigneeId
+        in: query
+        name: AssigneeId
+        type: integer
+      - description: Serch
+        in: query
+        name: Serch
+        type: string
+      - description: SortBy
+        in: query
+        name: SortBy
+        type: string
+      - description: Order
+        in: query
+        name: Order
+        type: string
+      - description: Limit Number
+        in: query
+        name: Limit
+        type: integer
+      - description: Offset Number
+        in: query
+        name: Offset
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Get all the task in the workspace
+      tags:
+      - Task
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Sign In to youer account
+      parameters:
+      - description: Login Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginDto'
+      produces:
+      - application/json
+      responses: {}
+      summary: Login
+      tags:
+      - Authentication
+  /project/{id}/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new project in the workspace
+      parameters:
+      - description: WorkSpace ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: AddProjectRequest Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddProjectRequest'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Create a new project in the workspace
+      tags:
+      - Project
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user account
+      parameters:
+      - description: Register Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserDto'
+      produces:
+      - application/json
+      responses: {}
+      summary: Register new user
+      tags:
+      - Authentication
+  /workspace:
+    get:
+      consumes:
+      - application/json
+      description: Create a new workSpace
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Workspace'
+      security:
+      - BearerAuth: []
+      summary: CreateWorkspace
+      tags:
+      - WorkSpace
+  /workspace/{id}/DeleteMember/{user_id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete memper from the workspace
+      parameters:
+      - description: WorkSpace ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: DeleteMember
+      tags:
+      - WorkSpaceMemper
+  /workspace/{id}/UpdateMemberRole:
+    put:
+      consumes:
+      - application/json
+      description: updete the memper role
+      parameters:
+      - description: WorkSpace ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: UpdateMemberRoleDto Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateMemberRoleDto'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: UpdateMemberRole
+      tags:
+      - WorkSpaceMemper
+  /workspace/{id}/invite:
+    post:
+      consumes:
+      - application/json
+      description: Invate memper to the workspace
+      parameters:
+      - description: WorkSpace ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: AddMemberDto Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddMemberDto'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: InviteMember
+      tags:
+      - WorkSpaceMemper
+  /workspace/{id}/members:
+    get:
+      consumes:
+      - application/json
+      description: Get all the Workspace Members
+      parameters:
+      - description: WorkSpace ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: GetWorkspaceMembers
+      tags:
+      - WorkSpaceMemper
+  /workspace/Delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete the workSpace
+      parameters:
+      - description: WorkSpace ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: DeleteWorkspace
+      tags:
+      - WorkSpace
+  /workspace/Update/{id}:
+    put:
+      consumes:
+      - application/json
+      description: update the workSpace
+      parameters:
+      - description: WorkSpace ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: UpdateWorkspaceDto Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateWorkspaceDto'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: UpdateWorkspace
+      tags:
+      - WorkSpace
+  /workspace/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new workSpace
+      parameters:
+      - description: CreateWorkspace Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateWorkspaceRequest'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: CreateWorkspace
+      tags:
+      - WorkSpace
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

@@ -18,6 +18,15 @@ func NewUserHandler(userService service.UserService) *UserHandler {
 		userService: userService,
 	}
 }
+
+// Register godoc
+// @Summary Register new user
+// @Description Create a new user account
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param request body dto.UserDto true "Register Request"
+// @Router /register [post]
 func (h *UserHandler) Register(c *gin.Context) {
 	var requst dto.UserDto
 	if err := c.ShouldBindJSON(&requst); err != nil {
@@ -44,6 +53,15 @@ func (h *UserHandler) Register(c *gin.Context) {
 		"message": "User registered successfully",
 	})
 }
+
+// /Login godoc
+// @Summary Login
+// @Description Sign In to youer account
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param request body dto.LoginDto true "Login Request"
+// @Router /login [post]
 func (h *UserHandler) Login(c *gin.Context) {
 	var loginDto dto.LoginDto
 	if err := c.ShouldBindJSON(&loginDto); err != nil {
