@@ -143,7 +143,7 @@ func (r *TaskRepository) CheckUser(ctx context.Context, Parent_task_id int64, As
 	}
 	return nil
 }
-func (r *TaskRepository) Create(ctx context.Context, Task *dto.AddTask) error {
+func (r *TaskRepository) Create(ctx context.Context, Task *model.Task) error {
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -155,14 +155,14 @@ func (r *TaskRepository) Create(ctx context.Context, Task *dto.AddTask) error {
 	`
 	var id int64
 	id = 0
-	err = tx.QueryRowContext(ctx, query, Task.Titel, Task.Description, Task.AssigneeId, Task.Parent_task_id, Task.DueDate, Task.ProjectId, Task.CreateUserId).Scan(&id)
+	err = tx.QueryRowContext(ctx, query, Task.Titel, Task.Description, Task.AssigneeId, Task.Parent_task_id, Task.Due_date, Task.ProjectId, Task.CreatedBy).Scan(&id)
 	if err != nil {
 		tx.Rollback()
 		return err
 	}
 	query = `INSERT INTO TaskHistory (task_id, action, changed_by)
 	VALUES ($1, $2,$3);`
-	_, err = tx.ExecContext(ctx, query, id, "create", Task.AssigneeId)
+	_, err = tx.ExecContext(ctx, query, id, "create", Task.CreatedBy)
 	if err != nil {
 		tx.Rollback()
 		return err

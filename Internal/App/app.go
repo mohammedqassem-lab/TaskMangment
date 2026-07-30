@@ -66,6 +66,8 @@ func New() (*App, error) {
 	adminAndMemberRoutes := authRoutes.Group("/")
 	adminAndMemberRoutes.Use(middelware.RequireRole(workspaceRepo, "Admin", "Member"))
 
+	AllRoute := authRoutes.Group("/", middelware.RequireRole(workspaceRepo, "Admin", "Member", "Viewer"))
+
 	// User Routes
 	route.LoginUserRoutes(r, userHandler)
 	route.RegisterUserRoutes(r, userHandler)
@@ -85,7 +87,7 @@ func New() (*App, error) {
 
 	// Project Routes
 	route.CreateProject(adminAndMemberRoutes, projectHandler)
-	route.GetById(authRoutes, projectHandler)
+	route.GetById(AllRoute, projectHandler)
 	route.Get(adminAndMemberRoutes, projectHandler)
 	route.Update(adminAndMemberRoutes, projectHandler)
 	route.Delete(adminAndMemberRoutes, projectHandler)
@@ -94,7 +96,7 @@ func New() (*App, error) {
 	route.CreateTaskRoute(adminAndMemberRoutes, taskHandler)
 	route.EditTaskRoute(adminAndMemberRoutes, taskHandler)
 	route.DeleteTaskRoute(adminAndMemberRoutes, taskHandler)
-	route.GetAllRoute(adminAndMemberRoutes, taskHandler)
+	route.GetAllRoute(AllRoute, taskHandler)
 
 	// Worker
 	ctx, cancel := context.WithCancel(context.Background())

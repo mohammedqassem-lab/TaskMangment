@@ -1,9 +1,11 @@
 package auth
 
 import (
+	database "TaskMangment/Internal/DataBase"
 	"context"
 	"crypto/rand"
 	"encoding/base64"
+	"log"
 	"strconv"
 	"time"
 
@@ -20,8 +22,12 @@ type MyCustomClaims struct {
 
 func CreateToken(userID int) (string, error) {
 	ctx := context.Background()
-
-	manager, err := jwtutil.NewJWTManager(jwtutil.HS256, signingKey)
+	signingKey, err := database.GetJwtKey()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	var signingKeyByte = []byte(signingKey)
+	manager, err := jwtutil.NewJWTManager(jwtutil.HS256, signingKeyByte)
 	if err != nil {
 		return "", err
 	}

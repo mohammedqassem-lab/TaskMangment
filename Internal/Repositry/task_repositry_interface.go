@@ -7,7 +7,7 @@ import (
 )
 
 type ITaskRepositry interface {
-	Create(ctx context.Context, Task *dto.AddTask) error
+	Create(ctx context.Context, Task *model.Task) error
 	Update(ctx context.Context, Task *dto.EditTask) error
 	Delete(ctx context.Context, Id int64) error
 

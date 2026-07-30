@@ -465,6 +465,25 @@ paths:
       summary: CreateWorkspace
       tags:
       - WorkSpace
+  /workspace/{id}/Delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete the workSpace
+      parameters:
+      - description: WorkSpace ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: DeleteWorkspace
+      tags:
+      - WorkSpace
   /workspace/{id}/DeleteMember/{user_id}:
     delete:
       consumes:
@@ -489,6 +508,31 @@ paths:
       summary: DeleteMember
       tags:
       - WorkSpaceMemper
+  /workspace/{id}/Update:
+    put:
+      consumes:
+      - application/json
+      description: update the workSpace
+      parameters:
+      - description: WorkSpace ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: UpdateWorkspaceDto Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateWorkspaceDto'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: UpdateWorkspace
+      tags:
+      - WorkSpace
   /workspace/{id}/UpdateMemberRole:
     put:
       consumes:
@@ -558,50 +602,6 @@ paths:
       summary: GetWorkspaceMembers
       tags:
       - WorkSpaceMemper
-  /workspace/Delete/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete the workSpace
-      parameters:
-      - description: WorkSpace ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses: {}
-      security:
-      - BearerAuth: []
-      summary: DeleteWorkspace
-      tags:
-      - WorkSpace
-  /workspace/Update/{id}:
-    put:
-      consumes:
-      - application/json
-      description: update the workSpace
-      parameters:
-      - description: WorkSpace ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: UpdateWorkspaceDto Request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dto.UpdateWorkspaceDto'
-      produces:
-      - application/json
-      responses: {}
-      security:
-      - BearerAuth: []
-      summary: UpdateWorkspace
-      tags:
-      - WorkSpace
   /workspace/create:
     post:
       consumes:

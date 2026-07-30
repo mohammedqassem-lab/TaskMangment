@@ -124,7 +124,7 @@ func (h *WorkspaceHandler) GetAllWorkspace(c *gin.Context) {
 // @Produce json
 // @Param id path int true "WorkSpace ID"
 // @Param request body dto.UpdateWorkspaceDto true "UpdateWorkspaceDto Request"
-// @Router /workspace/Update/{id} [put]
+// @Router /workspace/{id}/Update [put]
 func (h *WorkspaceHandler) UpdateWorkspace(c *gin.Context) {
 	var workspace dto.UpdateWorkspaceDto
 	if err := c.ShouldBindJSON(&workspace); err != nil {
@@ -167,7 +167,7 @@ func (h *WorkspaceHandler) UpdateWorkspace(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "WorkSpace ID"
-// @Router /workspace/Delete/{id} [delete]
+// @Router /workspace/{id}/Delete [delete]
 func (h *WorkspaceHandler) DeleteWorkspace(c *gin.Context) {
 	workspaceID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {

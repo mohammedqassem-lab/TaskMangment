@@ -23,6 +23,15 @@ func (t *TaskService) Create(ctx context.Context, Task *dto.AddTask) error {
 	if Task.DueDate.Before(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 0, 0, 0, 0, time.Local)) {
 		return fmt.Errorf("duedate can tot befoer today")
 	}
+	model := model.Task{
+		Titel:          Task.Titel,
+		Description:    Task.Description,
+		ProjectId:      Task.ProjectId,
+		AssigneeId:     Task.AssigneeId,
+		Parent_task_id: Task.Parent_task_id,
+		Due_date:       Task.DueDate,
+		CreatedBy:      Task.CreateUserId,
+	}
 	err := t.repo.CheckProject(ctx, Task.ProjectId, Task.WorkSpaceId)
 	if err != nil {
 		return err
@@ -31,7 +40,7 @@ func (t *TaskService) Create(ctx context.Context, Task *dto.AddTask) error {
 	if err != nil {
 		return err
 	}
-	err = t.repo.Create(ctx, Task)
+	err = t.repo.Create(ctx, &model)
 	if err != nil {
 		return err
 	}

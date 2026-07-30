@@ -14,8 +14,8 @@ func GetAllWorkspaceRoutes(r *gin.RouterGroup, workspaceHandler *handler.Workspa
 	r.GET("/workspace", workspaceHandler.GetAllWorkspace)
 }
 func UpdateWorkspaceRoutes(r *gin.RouterGroup, workspaceHandler *handler.WorkspaceHandler) {
-	r.PUT("/workspace/Update/:id", workspaceHandler.UpdateWorkspace)
+	r.PUT("/workspace/:id/Update", workspaceHandler.UpdateWorkspace)
 }
 func DeleteWorkspaceRoutes(r *gin.RouterGroup, workspaceHandler *handler.WorkspaceHandler) {
-	r.DELETE("/workspace/Delete/:id", workspaceHandler.DeleteWorkspace)
+	r.DELETE("/workspace/:id/Delete", workspaceHandler.DeleteWorkspace)
 }

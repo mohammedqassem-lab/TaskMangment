@@ -3,21 +3,11 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	_ "github.com/lib/pq"
 )
 
-/*
-const (
-
-	host     = "postgres-db"
-	port     = 5432
-	user     = "postgres"
-	password = "123456"
-	dbname   = "task_management"
-
-)
-*/
 const (
 	host     = "localhost"
 	port     = 5433
@@ -27,9 +17,13 @@ const (
 )
 
 func ConnectToDb() (*sql.DB, error) {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+	Env, err := GetEnv()
+	if err != nil {
+		log.Fatal(err)
+	}
+	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
 		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
+		Env.host, Env.port, Env.user, Env.password, Env.dbname)
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		return nil, err

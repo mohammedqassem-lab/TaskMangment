@@ -473,75 +473,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/workspace/Delete/{id}": {
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Delete the workSpace",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "WorkSpace"
-                ],
-                "summary": "DeleteWorkspace",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "WorkSpace ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/workspace/Update/{id}": {
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "update the workSpace",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "WorkSpace"
-                ],
-                "summary": "UpdateWorkspace",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "WorkSpace ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "UpdateWorkspaceDto Request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.UpdateWorkspaceDto"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
         "/workspace/create": {
             "post": {
                 "security": [
@@ -569,6 +500,36 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.CreateWorkspaceRequest"
                         }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/workspace/{id}/Delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete the workSpace",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WorkSpace"
+                ],
+                "summary": "DeleteWorkspace",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "WorkSpace ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -606,6 +567,45 @@ const docTemplate = `{
                         "name": "user_id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/workspace/{id}/Update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "update the workSpace",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WorkSpace"
+                ],
+                "summary": "UpdateWorkspace",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "WorkSpace ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "UpdateWorkspaceDto Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateWorkspaceDto"
+                        }
                     }
                 ],
                 "responses": {}
