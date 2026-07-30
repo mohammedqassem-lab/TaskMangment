@@ -161,7 +161,7 @@ func (h *TaskHandler) Delete(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "WorkSpace ID"
-// @Param status query string false "Task Status"
+// @Param Status query string false "Task Status"
 // @Param ProjectId query int false "ProjectId Number"
 // @Param Priorty query string false "Task Priorty"
 // @Param AssigneeId query int false "AssigneeId"

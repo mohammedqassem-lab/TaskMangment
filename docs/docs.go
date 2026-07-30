@@ -272,7 +272,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Task Status",
-                        "name": "status",
+                        "name": "Status",
                         "in": "query"
                     },
                     {
@@ -764,10 +764,6 @@ const docTemplate = `{
                 "assigneeid": {
                     "type": "integer"
                 },
-                "createUserId": {
-                    "type": "integer",
-                    "format": "int64"
-                },
                 "description": {
                     "type": "string"
                 },
@@ -782,10 +778,6 @@ const docTemplate = `{
                 },
                 "titel": {
                     "type": "string"
-                },
-                "workSpaceId": {
-                    "type": "integer",
-                    "format": "int64"
                 }
             }
         },
@@ -807,11 +799,7 @@ const docTemplate = `{
         "dto.EditTask": {
             "type": "object",
             "required": [
-                "description",
                 "id",
-                "priorty",
-                "status",
-                "titel",
                 "version"
             ],
             "properties": {
@@ -829,10 +817,6 @@ const docTemplate = `{
                 },
                 "titel": {
                     "type": "string"
-                },
-                "userId": {
-                    "type": "integer",
-                    "format": "int64"
                 },
                 "version": {
                     "type": "integer"

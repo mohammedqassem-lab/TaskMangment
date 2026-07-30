@@ -60,7 +60,7 @@ WHERE 1 = 1`
 	}
 
 	if taskFilter.Status != "" {
-		query += " AND status = $" + strconv.Itoa(index)
+		query += " AND status =$" + strconv.Itoa(index)
 		args = append(args, taskFilter.Status)
 		index++
 	}

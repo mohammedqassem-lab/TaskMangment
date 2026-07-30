@@ -24,9 +24,6 @@ definitions:
     properties:
       assigneeid:
         type: integer
-      createUserId:
-        format: int64
-        type: integer
       description:
         type: string
       due_date:
@@ -37,9 +34,6 @@ definitions:
         type: integer
       titel:
         type: string
-      workSpaceId:
-        format: int64
-        type: integer
     required:
     - assigneeid
     - description
@@ -69,17 +63,10 @@ definitions:
         type: string
       titel:
         type: string
-      userId:
-        format: int64
-        type: integer
       version:
         type: integer
     required:
-    - description
     - id
-    - priorty
-    - status
-    - titel
     - version
     type: object
   dto.LoginDto:
@@ -328,7 +315,7 @@ paths:
         type: integer
       - description: Task Status
         in: query
-        name: status
+        name: Status
         type: string
       - description: ProjectId Number
         in: query
