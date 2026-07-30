@@ -100,7 +100,9 @@ func New() (*App, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	overdueWorker := worker.NewOverDueWorker(*taskService)
+	userWorker := worker.NewUserWorker(*userService)
 	go overdueWorker.Start(ctx)
+	go userWorker.Start(ctx)
 
 	return &App{
 		DB:     db,

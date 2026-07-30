@@ -49,3 +49,33 @@ func (r *UserRepositry) ValidateRefreshToken(ctx context.Context, token string) 
 	err := row.Scan(&RefreshToken.Id, &RefreshToken.UserId, &RefreshToken.Token, &RefreshToken.ExpiresAt)
 	return RefreshToken, err
 }
+func (r *UserRepositry) MakerevokedTrue(ctx context.Context, id int64) error {
+	q := `UPDATE refresh_tokens SET revoked=true
+	where id=$1`
+	_, err := r.db.ExecContext(ctx, q, id)
+	return err
+}
+func (r *UserRepositry) GetRevokedToken(ctx context.Context) ([]*int64, error) {
+	query := `SELECT id from refresh_tokens
+	where revoked=false
+	AND expires_at < now()`
+	rows, err := r.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tasks []*int64
+	for rows.Next() {
+		var task int64
+		err := rows.Scan(&task)
+		if err != nil {
+			return nil, err
+		}
+		tasks = append(tasks, &task)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return tasks, nil
+}

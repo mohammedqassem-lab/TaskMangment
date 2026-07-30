@@ -10,4 +10,6 @@ type IUserRepositry interface {
 	GetByEmail(ctx context.Context, email string) (*model.User, error)
 	SaveRefreshToken(ctx context.Context, token model.RefreshToken) error
 	ValidateRefreshToken(ctx context.Context, token string) (model.RefreshToken, error)
+	MakerevokedTrue(ctx context.Context, id int64) error
+	GetRevokedToken(ctx context.Context) ([]*int64, error)
 }

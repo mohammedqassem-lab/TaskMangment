@@ -50,7 +50,7 @@ func (s *UserService) Login(ctx context.Context, loginDto model.User) (dto.Token
 	refreshToken := model.RefreshToken{
 		Token:     respose.RefreshToken,
 		UserId:    user.Id,
-		ExpiresAt: time.Now().Add(30 * 24 * time.Hour),
+		ExpiresAt: time.Now().Add(24 * time.Hour),
 	}
 	err = s.repo.SaveRefreshToken(ctx, refreshToken)
 	return respose, nil
@@ -69,9 +69,21 @@ func (s *UserService) RefreshToken(ctx context.Context, token string) (dto.Token
 	t.RefreshToken, err = auth.GenerateRefreshToken()
 	model := model.RefreshToken{
 		UserId:    refreshToken.UserId,
-		ExpiresAt: time.Now().Add(30 * 24 * time.Hour),
+		ExpiresAt: time.Now().Add(24 * time.Hour),
 		Token:     t.RefreshToken,
 	}
 	err = s.repo.SaveRefreshToken(ctx, model)
 	return t, err
+}
+func (s *UserService) MakeRefreshtokenRevoked(ctx context.Context) error {
+	ids, err := s.repo.GetRevokedToken(ctx)
+	if err != nil {
+		return err
+	}
+	for _, id := range ids {
+		if err := s.repo.MakerevokedTrue(ctx, *id); err != nil {
+			return err
+		}
+	}
+	return nil
 }

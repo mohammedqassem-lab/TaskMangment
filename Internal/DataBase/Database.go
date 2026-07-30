@@ -7,25 +7,25 @@ import (
 	_ "github.com/lib/pq"
 )
 
+/*
 const (
+
 	host     = "postgres-db"
 	port     = 5432
 	user     = "postgres"
 	password = "123456"
 	dbname   = "task_management"
+
 )
-
-/*
+*/
 const (
-
 	host     = "localhost"
 	port     = 5433
 	user     = "postgres"
 	password = "Moqr.Login"
 	dbname   = "TaskManegmintSystem"
-
 )
-*/
+
 func ConnectToDb() (*sql.DB, error) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",

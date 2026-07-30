@@ -9,4 +9,5 @@ type IUserService interface {
 	Regester(ctx context.Context, user *model.User) error
 	login(ctx context.Context, user *model.User) (string, error)
 	RefreshToken(ctx context.Context, token string) (model.RefreshToken, error)
+	MakeRefreshtokenRevoked(ctx context.Context) error
 }
