@@ -73,12 +73,23 @@ func (h *ProjectHandler) Create(c *gin.Context) {
 			"massage": "an error occorded",
 			"error":   err.Error(),
 		})
+		return
 	}
 	c.JSON(http.StatusCreated, gin.H{
 		"massage": "Project created",
 	})
 }
 
+// GetProjectById godoc
+// @Summary Get a project by ID
+// @Description Get a project by its ID
+// @Tags Project
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "WorkSpace ID"
+// @Param projectid path int true "Project ID"
+// @Router /project/{id} [get]
 func (h *ProjectHandler) GetById(c *gin.Context) {
 	idstr := c.Param("id")
 	id, err := strconv.ParseInt(idstr, 10, 64)
@@ -89,7 +100,16 @@ func (h *ProjectHandler) GetById(c *gin.Context) {
 		})
 		return
 	}
-	workspaces, err := h.projectService.GetById(c.Request.Context(), id)
+	projectIdstr := c.Param("projectid")
+	projectId, err := strconv.ParseInt(projectIdstr, 10, 64)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"message": "invalid project id",
+			"error":   err.Error(),
+		})
+		return
+	}
+	workspaces, err := h.projectService.GetById(c.Request.Context(), projectId, id)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"message": "Internal Server Error",
@@ -113,23 +133,24 @@ func (h *ProjectHandler) Get(c *gin.Context) {
 	workspaceId := c.Param("id")
 	id, err := strconv.ParseInt(workspaceId, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "invalid id",
 			"error":   err.Error(),
 		})
 		return
 	}
 	projects, err := h.projectService.Get(c, id)
-	if projects == nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"message": "not found",
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "internal server error",
+			"error":   err.Error(),
 		})
 		return
 	}
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "invalid id",
-			"error":   err.Error(),
+	if projects == nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "not found",
 		})
 		return
 	}
@@ -149,15 +170,24 @@ func (h *ProjectHandler) Get(c *gin.Context) {
 // @Param request body dto.UpdateProject true "UpdateProject Request"
 // @Router /Project/{id}/Update [put]
 func (h *ProjectHandler) Update(c *gin.Context) {
-	var model dto.UpdateProject
-	err := c.ShouldBindJSON(&model)
+	workspaceId, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid workspace id",
+			"error":   err.Error(),
+		})
+		return
+	}
+	var model dto.UpdateProject
+	err = c.ShouldBindJSON(&model)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "invalid data",
 			"error":   err.Error(),
 		})
 		return
 	}
+	model.WorkspaceId = workspaceId
 	err = h.projectService.Update(c, &model)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -182,6 +212,14 @@ func (h *ProjectHandler) Update(c *gin.Context) {
 // @Param projectid path int true "project ID"
 // @Router /Project/{id}/Delete/{projectid} [delete]
 func (h *ProjectHandler) Delete(c *gin.Context) {
+	workspaceId, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid workspace id",
+			"error":   err.Error(),
+		})
+		return
+	}
 	idstr := c.Param("projectid")
 	id, err := strconv.ParseInt(idstr, 10, 64)
 	if err != nil {
@@ -190,7 +228,7 @@ func (h *ProjectHandler) Delete(c *gin.Context) {
 		})
 		return
 	}
-	err = h.projectService.Delete(c, id)
+	err = h.projectService.Delete(c, id, workspaceId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),

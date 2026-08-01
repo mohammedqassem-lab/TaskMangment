@@ -22,67 +22,68 @@ func GetNewTaskRepository(db *sql.DB) *TaskRepository {
 func BuildQuery(taskFilter dto.TaskFilter) (string, []any) {
 	query := `
 SELECT
-	id,
-	project_id,
-	title,
-	description,
-	status,
-	priority,
-	parent_task_id,
-	assignee_id,
-	created_by,
-	due_date,
-	created_at,
-	updated_at,
-	version
-FROM task
-WHERE 1 = 1`
+	t.id,
+	t.project_id,
+	t.title,
+	t.description,
+	t.status,
+	t.priority,
+	t.parent_task_id,
+	t.assignee_id,
+	t.created_by,
+	t.due_date,
+	t.created_at,
+	t.updated_at,
+	t.version
+FROM task t
+Join project p on p.id=t.project_id
+WHERE p.workspace_id = $1`
 
-	args := []any{}
-	index := 1
+	args := []any{taskFilter.WorkSpaceId}
+	index := 2
 
 	if taskFilter.ProjectId != 0 {
-		query += " AND project_id = $" + strconv.Itoa(index)
+		query += " AND t.project_id = $" + strconv.Itoa(index)
 		args = append(args, taskFilter.ProjectId)
 		index++
 	}
 
 	if taskFilter.AssigneeId != 0 {
-		query += " AND assignee_id = $" + strconv.Itoa(index)
+		query += " AND t.assignee_id = $" + strconv.Itoa(index)
 		args = append(args, taskFilter.AssigneeId)
 		index++
 	}
 
 	if taskFilter.Priorty != "" {
-		query += " AND priority = $" + strconv.Itoa(index)
+		query += " AND t.priority = $" + strconv.Itoa(index)
 		args = append(args, taskFilter.Priorty)
 		index++
 	}
 
 	if taskFilter.Status != "" {
-		query += " AND status =$" + strconv.Itoa(index)
+		query += " AND t.status =$" + strconv.Itoa(index)
 		args = append(args, taskFilter.Status)
 		index++
 	}
 
 	if taskFilter.Serch != "" {
-		query += " AND (title ILIKE $" + strconv.Itoa(index) +
-			" OR description ILIKE $" + strconv.Itoa(index) + ")"
+		query += " AND (t.title ILIKE $" + strconv.Itoa(index) +
+			" OR t.description ILIKE $" + strconv.Itoa(index) + ")"
 
 		args = append(args, "%"+taskFilter.Serch+"%")
 		index++
 	}
 
 	// Sorting
-	sortColumn := "created_at"
+	sortColumn := "t.created_at"
 
 	switch taskFilter.SortBy {
 	case "priority":
-		sortColumn = "priority"
+		sortColumn = "t.priority"
 	case "title":
-		sortColumn = "title"
+		sortColumn = "t.title"
 	case "due_date":
-		sortColumn = "due_date"
+		sortColumn = "t.due_date"
 	}
 
 	order := "ASC"
@@ -246,29 +247,35 @@ func (r *TaskRepository) Update(ctx context.Context, Task *dto.EditTask) error {
 	tx.Commit()
 	return nil
 }
-func (r *TaskRepository) Delete(ctx context.Context, Id int64) error {
+func (r *TaskRepository) Delete(ctx context.Context, Id, WorkspaceId int64) error {
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
 	query := `
 	DELETE FROM task
-	WHERE id = $1
+	WHERE parent_task_id = $1
 	`
+
 	_, err = tx.ExecContext(ctx, query, Id)
 	if err != nil {
 		tx.Rollback()
 		return err
 	}
-
 	query = `
 	DELETE FROM task
-	WHERE parent_task_id = $1
+	WHERE id = $1
 	`
-	_, err = tx.ExecContext(ctx, query, Id)
+
+	result, err := tx.ExecContext(ctx, query, Id)
 	if err != nil {
 		tx.Rollback()
 		return err
+	}
+	row, _ := result.RowsAffected()
+	if row == 0 {
+		tx.Rollback()
+		return fmt.Errorf("the data was changed")
 	}
 	return nil
 }

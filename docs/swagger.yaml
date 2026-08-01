@@ -3,6 +3,10 @@ definitions:
   dto.AddMemberDto:
     properties:
       role:
+        enum:
+        - Admin
+        - Member
+        - Viewer
         type: string
       user_id:
         type: integer
@@ -57,9 +61,19 @@ definitions:
         type: string
       id:
         type: integer
-      priorty:
+      priority:
+        enum:
+        - Low
+        - Medium
+        - High
+        - Hihg
         type: string
       status:
+        enum:
+        - Todo
+        - In
+        - Progress
+        - Done
         type: string
       titel:
         type: string
@@ -79,9 +93,20 @@ definitions:
     - email
     - password
     type: object
+  dto.RefreshTokenDto:
+    properties:
+      token:
+        type: string
+    required:
+    - token
+    type: object
   dto.UpdateMemberRoleDto:
     properties:
       role:
+        enum:
+        - Admin
+        - Member
+        - Viewer
         type: string
       user_id:
         type: integer
@@ -151,7 +176,7 @@ definitions:
 host: localhost:8080
 info:
   contact:
-    email: example@example.com
+    email: mohammed.qassem@baly.iq
     name: Mohammed
   description: Task Management System API
   license:
@@ -264,7 +289,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: WorkSpace ID
+      - description: Task ID
         in: path
         name: task_id
         required: true
@@ -375,6 +400,30 @@ paths:
       summary: Login
       tags:
       - Authentication
+  /project/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a project by its ID
+      parameters:
+      - description: WorkSpace ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Project ID
+        in: path
+        name: projectid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Get a project by ID
+      tags:
+      - Project
   /project/{id}/create:
     post:
       consumes:
@@ -400,17 +449,18 @@ paths:
       summary: Create a new project in the workspace
       tags:
       - Project
-  /refreshToken/{token}:
+  /refreshToken:
     post:
       consumes:
       - application/json
       description: refresh youer jwt
       parameters:
-      - description: RefreshToken
-        in: path
-        name: token
+      - description: RefreshToken request
+        in: body
+        name: requst
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/dto.RefreshTokenDto'
       produces:
       - application/json
       responses: {}

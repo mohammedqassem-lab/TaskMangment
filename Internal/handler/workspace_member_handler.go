@@ -54,8 +54,7 @@ func (h *WorkspaceMemberHandler) InviteMember(c *gin.Context) {
 	err = h.workspaceMemberService.InviteMember(c.Request.Context(), workspaceIDInt, memper.UserID, memper.Role)
 	if err != nil {
 		c.JSON(404, gin.H{
-			"error":   err.Error(),
-			"message": "Workspace not found",
+			"error": err.Error(),
 		})
 		return
 	}

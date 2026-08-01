@@ -19,11 +19,16 @@ func GetNewWorkspaceMemberRepository(db *sql.DB) *WorkspaceMemberRepository {
 }
 
 func (r *WorkspaceMemberRepository) AddMember(ctx context.Context, workspaceID, userID int64, role string) error {
-	query := `
+	query := `Select id from users where id=$1`
+	err := r.db.QueryRowContext(ctx, query, userID).Scan(&userID)
+	if err != nil {
+		return fmt.Errorf("user not found")
+	}
+	query = `
 	INSERT INTO workspaces_member (workspace_id, user_id, role)
 	VALUES ($1, $2, $3);
 	`
-	_, err := r.db.ExecContext(ctx, query, workspaceID, userID, role)
+	_, err = r.db.ExecContext(ctx, query, workspaceID, userID, role)
 	if err != nil {
 		return err
 	}
@@ -83,15 +88,15 @@ func (r *WorkspaceMemberRepository) DeleteMember(ctx context.Context, workspaceI
 	}
 	return nil
 }
-func (r *WorkspaceMemberRepository) GetWorkspaceByUserID(ctx context.Context, UserId int64) (*model.Workspace, error) {
+func (r *WorkspaceMemberRepository) GetWorkspaceByUserID(ctx context.Context, UserId, Workcpaseid int64) (*model.Workspace, error) {
 	query := `
 	SELECT w.id, w.name, w.description, w.owner_id
 	FROM workspaces w
 	JOIN workspaces_member wm ON w.id = wm.workspace_id
-	WHERE wm.user_id = $1;
+	WHERE wm.user_id = $1 AND w.id = $2;
 	`
 	var workspace model.Workspace
-	err := r.db.QueryRowContext(ctx, query, UserId).Scan(&workspace.ID, &workspace.Name, &workspace.Description, &workspace.OwnerID)
+	err := r.db.QueryRowContext(ctx, query, UserId, Workcpaseid).Scan(&workspace.ID, &workspace.Name, &workspace.Description, &workspace.OwnerID)
 	if err != nil {
 		return nil, err
 	}

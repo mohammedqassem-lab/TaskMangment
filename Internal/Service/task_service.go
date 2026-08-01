@@ -49,8 +49,8 @@ func (t *TaskService) Create(ctx context.Context, Task *dto.AddTask) error {
 func (t *TaskService) Edit(ctx context.Context, Task *dto.EditTask) error {
 	return t.repo.Update(ctx, Task)
 }
-func (t *TaskService) Delete(ctx context.Context, id int64) error {
-	return t.repo.Delete(ctx, id)
+func (t *TaskService) Delete(ctx context.Context, id, WorkspaceId int64) error {
+	return t.repo.Delete(ctx, id, WorkspaceId)
 }
 func (t *TaskService) GetAll(ctx context.Context, FilterTask dto.TaskFilter) ([]*model.Task, error) {
 	return t.repo.GetAll(ctx, FilterTask)

@@ -5,4 +5,5 @@ type UpdateProject struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Version     int64  `json:"version" binding:"required"`
+	WorkspaceId int64  `json:"-" swaggerignore:"true"`
 }

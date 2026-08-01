@@ -28,15 +28,15 @@ func (r *ProjectRepository) Create(ctx context.Context, project *model.Project) 
 	}
 	return nil
 }
-func (r *ProjectRepository) GetById(ctx context.Context, id int64) (*dto.ProjectDto, error) {
+func (r *ProjectRepository) GetById(ctx context.Context, id int64, workspaceId int64) (*dto.ProjectDto, error) {
 	query := `
 	SELECT p.id,p.name,w.name,p.description,u.name FROM Project p
 	join workspaces w on w.id=p.workspace_id
 	join users u on u.id=p.created_by
-	WHERE p.id = $1
+	WHERE p.id = $1 And p.workspace_id = $2
 	`
 	var model dto.ProjectDto
-	row := r.db.QueryRowContext(ctx, query, id)
+	row := r.db.QueryRowContext(ctx, query, id, workspaceId)
 	err := row.Scan(&model.Id, &model.Name, &model.WorkspaceName, &model.Description, &model.UserName)
 	if err != nil {
 		return nil, err
@@ -77,24 +77,29 @@ func (r *ProjectRepository) Update(ctx context.Context, project *dto.UpdateProje
 	description=$2,
 	version=version+1
 	where id = $3
-	AND version=$4
+	AND workspace_id=$4
+	AND version=$5
 	`
-	result, err := r.db.ExecContext(ctx, query, project.Name, project.Description, project.Id, project.Version)
+	result, err := r.db.ExecContext(ctx, query, project.Name, project.Description, project.Id, project.WorkspaceId, project.Version)
 	if err != nil {
 		return err
 	}
 	row, _ := result.RowsAffected()
 	if row == 0 {
-		return fmt.Errorf("tha data was changed")
+		return fmt.Errorf("the data was changed")
 	}
 	return nil
 }
-func (r *ProjectRepository) Delete(ctx context.Context, id int64) error {
+func (r *ProjectRepository) Delete(ctx context.Context, id int64, workspaceId int64) error {
 	query := `DELETE FROM Project
-	WHERE id = $1`
-	_, err := r.db.ExecContext(ctx, query, id)
+	WHERE id = $1 And workspace_id=$2`
+	result, err := r.db.ExecContext(ctx, query, id, workspaceId)
 	if err != nil {
 		return err
+	}
+	row, _ := result.RowsAffected()
+	if row == 0 {
+		return fmt.Errorf("Project not found or already deleted")
 	}
 	return nil
 }

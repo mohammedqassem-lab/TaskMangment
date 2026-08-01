@@ -17,10 +17,7 @@ func NewWorkspaceMemberService(repo repositry.IWorkspaceMemberRepository) *Works
 	}
 }
 func (s *WorkspaceMemberService) InviteMember(ctx context.Context, workspaceID int64, userID int64, role string) error {
-	workspace, err := s.repo.GetWorkspaceByUserID(ctx, userID)
-	if err == nil {
-		return fmt.Errorf("user is already a member of the workspace")
-	}
+	workspace, _ := s.repo.GetWorkspaceByUserID(ctx, userID, workspaceID)
 	if workspace != nil {
 		return fmt.Errorf("user is already a member of the workspace")
 	}

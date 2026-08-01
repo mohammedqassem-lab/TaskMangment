@@ -87,6 +87,14 @@ func (h *TaskHandler) Create(c *gin.Context) {
 // @Router /Task/{id}/Edit [put]
 func (h *TaskHandler) Edit(c *gin.Context) {
 	var requst dto.EditTask
+	workspaceId, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid workspace id",
+			"error":   err.Error(),
+		})
+		return
+	}
 	if err := c.ShouldBindJSON(&requst); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"massage": "BadRequest",
@@ -109,12 +117,14 @@ func (h *TaskHandler) Edit(c *gin.Context) {
 		return
 	}
 	requst.UserId = UserIdInt
+	requst.WorkSpaceId = workspaceId
 	err = h.TaskService.Edit(c, &requst)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"massage": "InternalServerError",
 			"error":   err.Error(),
 		})
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"massage": "Task Updeted",
@@ -129,9 +139,17 @@ func (h *TaskHandler) Edit(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "WorkSpace ID"
-// @Param task_id path int true "WorkSpace ID"
+// @Param task_id path int true "Task ID"
 // @Router /Task/{id}/Delete/{task_id} [delete]
 func (h *TaskHandler) Delete(c *gin.Context) {
+	workspaceId, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid workspace id",
+			"error":   err.Error(),
+		})
+		return
+	}
 	idstr := c.Param("task_id")
 	id, err := strconv.ParseInt(idstr, 10, 64)
 	if err != nil {
@@ -140,7 +158,7 @@ func (h *TaskHandler) Delete(c *gin.Context) {
 		})
 		return
 	}
-	err = h.TaskService.Delete(c, id)
+	err = h.TaskService.Delete(c, id, workspaceId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"massage": "internal server error",
@@ -173,7 +191,16 @@ func (h *TaskHandler) Delete(c *gin.Context) {
 // @Router /Task/{id}/GetAll [get]
 func (h *TaskHandler) GetAll(c *gin.Context) {
 	var filter dto.TaskFilter
-	err := c.ShouldBindQuery(&filter)
+	workspaceId, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid workspace id",
+			"error":   err.Error(),
+		})
+		return
+	}
+	filter.WorkSpaceId = workspaceId
+	err = c.ShouldBindQuery(&filter)
 	if err != nil {
 		c.JSON(400, nil)
 	}

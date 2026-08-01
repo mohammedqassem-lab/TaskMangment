@@ -10,7 +10,7 @@ func CreateProject(r *gin.RouterGroup, ProjectHandler *handler.ProjectHandler) {
 	r.POST("/project/:id/create", ProjectHandler.Create)
 }
 func GetById(r *gin.RouterGroup, ProjectHAndler *handler.ProjectHandler) {
-	r.GET("/Project/GetbyId/:id", ProjectHAndler.GetById)
+	r.GET("/Project/:id/GetbyId/:id", ProjectHAndler.GetById)
 }
 func Get(r *gin.RouterGroup, ProjectHandler *handler.ProjectHandler) {
 	r.GET("/Project/:id/Get", ProjectHandler.Get)

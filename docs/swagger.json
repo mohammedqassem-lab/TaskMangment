@@ -6,7 +6,7 @@
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
             "name": "Mohammed",
-            "email": "example@example.com"
+            "email": "mohammed.qassem@baly.iq"
         },
         "license": {
             "name": "MIT"
@@ -189,7 +189,7 @@
                     },
                     {
                         "type": "integer",
-                        "description": "WorkSpace ID",
+                        "description": "Task ID",
                         "name": "task_id",
                         "in": "path",
                         "required": true
@@ -348,6 +348,43 @@
                 "responses": {}
             }
         },
+        "/project/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get a project by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "Get a project by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "WorkSpace ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "projectid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/project/{id}/create": {
             "post": {
                 "security": [
@@ -387,7 +424,7 @@
                 "responses": {}
             }
         },
-        "/refreshToken/{token}": {
+        "/refreshToken": {
             "post": {
                 "description": "refresh youer jwt",
                 "consumes": [
@@ -402,11 +439,13 @@
                 "summary": "RefreshToken",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "RefreshToken",
-                        "name": "token",
-                        "in": "path",
-                        "required": true
+                        "description": "RefreshToken request",
+                        "name": "requst",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RefreshTokenDto"
+                        }
                     }
                 ],
                 "responses": {}
@@ -723,7 +762,12 @@
             ],
             "properties": {
                 "role": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Admin",
+                        "Member",
+                        "Viewer"
+                    ]
                 },
                 "user_id": {
                     "type": "integer"
@@ -803,11 +847,23 @@
                 "id": {
                     "type": "integer"
                 },
-                "priorty": {
-                    "type": "string"
+                "priority": {
+                    "type": "string",
+                    "enum": [
+                        "Low",
+                        "Medium",
+                        "High",
+                        "Hihg"
+                    ]
                 },
                 "status": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Todo",
+                        "In",
+                        "Progress",
+                        "Done"
+                    ]
                 },
                 "titel": {
                     "type": "string"
@@ -832,6 +888,17 @@
                 }
             }
         },
+        "dto.RefreshTokenDto": {
+            "type": "object",
+            "required": [
+                "token"
+            ],
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.UpdateMemberRoleDto": {
             "type": "object",
             "required": [
@@ -841,7 +908,12 @@
             ],
             "properties": {
                 "role": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Admin",
+                        "Member",
+                        "Viewer"
+                    ]
                 },
                 "user_id": {
                     "type": "integer"

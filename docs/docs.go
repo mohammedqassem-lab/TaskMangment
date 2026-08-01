@@ -12,7 +12,7 @@ const docTemplate = `{
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
             "name": "Mohammed",
-            "email": "example@example.com"
+            "email": "mohammed.qassem@baly.iq"
         },
         "license": {
             "name": "MIT"
@@ -195,7 +195,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "WorkSpace ID",
+                        "description": "Task ID",
                         "name": "task_id",
                         "in": "path",
                         "required": true
@@ -354,6 +354,43 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/project/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get a project by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "Get a project by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "WorkSpace ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "projectid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/project/{id}/create": {
             "post": {
                 "security": [
@@ -393,7 +430,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/refreshToken/{token}": {
+        "/refreshToken": {
             "post": {
                 "description": "refresh youer jwt",
                 "consumes": [
@@ -408,11 +445,13 @@ const docTemplate = `{
                 "summary": "RefreshToken",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "RefreshToken",
-                        "name": "token",
-                        "in": "path",
-                        "required": true
+                        "description": "RefreshToken request",
+                        "name": "requst",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RefreshTokenDto"
+                        }
                     }
                 ],
                 "responses": {}
@@ -729,7 +768,12 @@ const docTemplate = `{
             ],
             "properties": {
                 "role": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Admin",
+                        "Member",
+                        "Viewer"
+                    ]
                 },
                 "user_id": {
                     "type": "integer"
@@ -809,11 +853,23 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "priorty": {
-                    "type": "string"
+                "priority": {
+                    "type": "string",
+                    "enum": [
+                        "Low",
+                        "Medium",
+                        "High",
+                        "Hihg"
+                    ]
                 },
                 "status": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Todo",
+                        "In",
+                        "Progress",
+                        "Done"
+                    ]
                 },
                 "titel": {
                     "type": "string"
@@ -838,6 +894,17 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.RefreshTokenDto": {
+            "type": "object",
+            "required": [
+                "token"
+            ],
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.UpdateMemberRoleDto": {
             "type": "object",
             "required": [
@@ -847,7 +914,12 @@ const docTemplate = `{
             ],
             "properties": {
                 "role": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Admin",
+                        "Member",
+                        "Viewer"
+                    ]
                 },
                 "user_id": {
                     "type": "integer"

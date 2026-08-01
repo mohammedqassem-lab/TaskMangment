@@ -13,8 +13,6 @@ import (
 	jwtutil "github.com/kittipat1413/go-common/util/jwt"
 )
 
-var signingKey = []byte("2b9f697194f1c9c0490b4bf44f808726be6df3cc9d0ba8f8101a166bb962db17")
-
 type MyCustomClaims struct {
 	jwt.RegisteredClaims
 	UserID string `json:"uid"`
@@ -51,8 +49,11 @@ func CreateToken(userID int) (string, error) {
 
 func ValidateToken(token string) (*MyCustomClaims, error) {
 	ctx := context.Background()
-
-	manager, err := jwtutil.NewJWTManager(jwtutil.HS256, signingKey)
+	key, err := database.GetJwtKey()
+	if err != nil {
+		return &MyCustomClaims{}, err
+	}
+	manager, err := jwtutil.NewJWTManager(jwtutil.HS256, []byte(key))
 	if err != nil {
 		return nil, err
 	}

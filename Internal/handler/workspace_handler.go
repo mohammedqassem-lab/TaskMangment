@@ -69,7 +69,7 @@ func (h *WorkspaceHandler) CreateWorkspace(c *gin.Context) {
 		})
 		return
 	}
-	userId, err := strconv.ParseInt(userStr, 10, 46)
+	userId, err := strconv.ParseInt(userStr, 10, 64)
 	if err != nil {
 		c.JSON(400, gin.H{
 			"message": "Invalid user ID",
@@ -95,13 +95,12 @@ func (h *WorkspaceHandler) CreateWorkspace(c *gin.Context) {
 }
 
 // GetAllWorkspace godoc
-// @Summary CreateWorkspace
-// @Description Create a new workSpace
+// @Summary GetAllWorkspace
+// @Description Get all workspaces
 // @Tags WorkSpace
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Success 200 {object} model.Workspace
 // @Router /workspace [get]
 func (h *WorkspaceHandler) GetAllWorkspace(c *gin.Context) {
 	workspaces, err := h.workspaceService.GetAllWorkspace(c.Request.Context())
