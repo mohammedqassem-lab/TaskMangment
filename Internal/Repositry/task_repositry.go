@@ -247,7 +247,7 @@ func (r *TaskRepository) Update(ctx context.Context, Task *dto.EditTask) error {
 	tx.Commit()
 	return nil
 }
-func (r *TaskRepository) Delete(ctx context.Context, Id, WorkspaceId int64) error {
+func (r *TaskRepository) Delete(ctx context.Context, Id int64) error {
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -277,6 +277,7 @@ func (r *TaskRepository) Delete(ctx context.Context, Id, WorkspaceId int64) erro
 		tx.Rollback()
 		return fmt.Errorf("the data was changed")
 	}
+	tx.Commit()
 	return nil
 }
 func (r *TaskRepository) GetAll(ctx context.Context, TaskFilter dto.TaskFilter) ([]*model.Task, error) {

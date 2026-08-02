@@ -142,14 +142,6 @@ func (h *TaskHandler) Edit(c *gin.Context) {
 // @Param task_id path int true "Task ID"
 // @Router /Task/{id}/Delete/{task_id} [delete]
 func (h *TaskHandler) Delete(c *gin.Context) {
-	workspaceId, err := strconv.ParseInt(c.Param("id"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "invalid workspace id",
-			"error":   err.Error(),
-		})
-		return
-	}
 	idstr := c.Param("task_id")
 	id, err := strconv.ParseInt(idstr, 10, 64)
 	if err != nil {
@@ -158,7 +150,7 @@ func (h *TaskHandler) Delete(c *gin.Context) {
 		})
 		return
 	}
-	err = h.TaskService.Delete(c, id, workspaceId)
+	err = h.TaskService.Delete(c, id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"massage": "internal server error",
