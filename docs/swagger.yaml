@@ -210,6 +210,30 @@ paths:
       summary: get projects in the workspace
       tags:
       - Project
+  /Project/{id}/GetbyId/{projectid}:
+    get:
+      consumes:
+      - application/json
+      description: Get a project by its ID
+      parameters:
+      - description: WorkSpace ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Project ID
+        in: path
+        name: projectid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Get a project by ID
+      tags:
+      - Project
   /Project/{id}/Update:
     put:
       consumes:
@@ -233,6 +257,31 @@ paths:
       security:
       - BearerAuth: []
       summary: update the project in the workspace
+      tags:
+      - Project
+  /Project/{id}/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new project in the workspace
+      parameters:
+      - description: WorkSpace ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: AddProjectRequest Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddProjectRequest'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Create a new project in the workspace
       tags:
       - Project
   /Task/{id}/Create:
@@ -382,55 +431,6 @@ paths:
       summary: Login
       tags:
       - Authentication
-  /project/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Get a project by its ID
-      parameters:
-      - description: WorkSpace ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Project ID
-        in: path
-        name: projectid
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses: {}
-      security:
-      - BearerAuth: []
-      summary: Get a project by ID
-      tags:
-      - Project
-  /project/{id}/create:
-    post:
-      consumes:
-      - application/json
-      description: Create a new project in the workspace
-      parameters:
-      - description: WorkSpace ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: AddProjectRequest Request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dto.AddProjectRequest'
-      produces:
-      - application/json
-      responses: {}
-      security:
-      - BearerAuth: []
-      summary: Create a new project in the workspace
-      tags:
-      - Project
   /refreshToken:
     post:
       consumes:

@@ -1,6 +1,7 @@
 package app
 
 import (
+	cashing "TaskMangment/Internal/Cashing"
 	database "TaskMangment/Internal/DataBase"
 	middelware "TaskMangment/Internal/Middelware"
 	repositry "TaskMangment/Internal/Repositry"
@@ -28,13 +29,13 @@ func New() (*App, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	cash := cashing.NewCache(100 * 1024 * 1024)
 	// Repositories
 	userRepo := repositry.GetNewUserRepositry(db)
-	workspaceRepo := repositry.GetNewWorkspaceRepository(db)
+	workspaceRepo := repositry.GetNewWorkspaceRepository(db, cash)
 	workspaceMemberRepo := repositry.GetNewWorkspaceMemberRepository(db)
-	projectRepo := repositry.GetNewProjectRepository(db)
-	taskRepo := repositry.GetNewTaskRepository(db)
+	projectRepo := repositry.GetNewProjectRepository(db, cash)
+	taskRepo := repositry.GetNewTaskRepository(db, cash)
 
 	// Services
 	userService := service.NewUserService(userRepo)

@@ -1,19 +1,24 @@
 package repositry
 
 import (
+	cashing "TaskMangment/Internal/Cashing"
 	model "TaskMangment/Internal/Model"
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"strconv"
 )
 
 type WorkspaceRepository struct {
-	db *sql.DB
+	db   *sql.DB
+	cahe *cashing.Cache
 }
 
-func GetNewWorkspaceRepository(db *sql.DB) *WorkspaceRepository {
+func GetNewWorkspaceRepository(db *sql.DB, cache *cashing.Cache) *WorkspaceRepository {
 	return &WorkspaceRepository{
-		db: db,
+		db:   db,
+		cahe: cache,
 	}
 }
 func (r *WorkspaceRepository) Create(ctx context.Context, workspace *model.Workspace) error {
@@ -64,7 +69,10 @@ func (r *WorkspaceRepository) Create(ctx context.Context, workspace *model.Works
 		tx.Rollback()
 		return err
 	}
-
+	val, err := json.Marshal(workspace)
+	if err == nil {
+		r.cahe.Set("workspace"+strconv.FormatInt(workspace.ID, 10), val, 60)
+	}
 	return nil
 }
 func (r *WorkspaceRepository) GetRole(ctx context.Context, workspaceID, userID int64) (string, error) {
@@ -94,6 +102,14 @@ func (r *WorkspaceRepository) GetWorkspaceByUserID(ctx context.Context, UserId i
 	return &workspace, nil
 }
 func (r *WorkspaceRepository) GetAllWorkspace(ctx context.Context) ([]*model.Workspace, error) {
+	val, err := r.cahe.Get("workspaces")
+	if err == nil {
+		var workspaces []*model.Workspace
+		err := json.Unmarshal(val, &workspaces)
+		if err == nil {
+			return workspaces, nil
+		}
+	}
 	query := `
 	SELECT id, name, description, owner_id, version
 	FROM workspaces;
@@ -112,11 +128,14 @@ func (r *WorkspaceRepository) GetAllWorkspace(ctx context.Context) ([]*model.Wor
 			return nil, err
 		}
 		workspaces = append(workspaces, &workspace)
+		val, err := json.Marshal(workspaces)
+		if err == nil {
+			r.cahe.Set("workspaces"+strconv.FormatInt(workspace.ID, 10), val, 60)
+		}
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-
 	return workspaces, nil
 }
 func (r *WorkspaceRepository) UpdateWorkspace(ctx context.Context, workspace *model.Workspace) error {
@@ -125,7 +144,6 @@ func (r *WorkspaceRepository) UpdateWorkspace(ctx context.Context, workspace *mo
 	SET name = $1, description = $2,version=version+1
 	WHERE id = $3 AND version=$4;
 	`
-	fmt.Println(workspace.Version)
 	result, err := r.db.ExecContext(ctx, query, workspace.Name, workspace.Description, workspace.ID, workspace.Version)
 	if err != nil {
 		return err
@@ -142,5 +160,9 @@ func (r *WorkspaceRepository) DeleteWorkspace(ctx context.Context, workspaceID i
 	WHERE id = $1
 	`
 	_, err := r.db.ExecContext(ctx, query, workspaceID)
-	return err
+	if err != nil {
+		return err
+	}
+	r.cahe.Delete("workspaces" + strconv.FormatInt(workspaceID, 10))
+	return nil
 }

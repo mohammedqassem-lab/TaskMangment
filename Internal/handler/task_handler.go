@@ -64,10 +64,7 @@ func (h *TaskHandler) Create(c *gin.Context) {
 	requst.CreateUserId = UserIdInt
 	err = h.TaskService.Create(c, &requst)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"massage": "InternalServerError",
-			"error":   err.Error(),
-		})
+		c.Error(err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
@@ -120,10 +117,7 @@ func (h *TaskHandler) Edit(c *gin.Context) {
 	requst.WorkSpaceId = workspaceId
 	err = h.TaskService.Edit(c, &requst)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"massage": "InternalServerError",
-			"error":   err.Error(),
-		})
+		c.Error(err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
@@ -152,10 +146,7 @@ func (h *TaskHandler) Delete(c *gin.Context) {
 	}
 	err = h.TaskService.Delete(c, id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"massage": "internal server error",
-			"error":   err.Error(),
-		})
+		c.Error(err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
@@ -198,10 +189,7 @@ func (h *TaskHandler) GetAll(c *gin.Context) {
 	}
 	Tasks, err := h.TaskService.GetAll(c, filter)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"massage": "internal server error",
-			"error":   err.Error(),
-		})
+		c.Error(err)
 		return
 	}
 	c.JSON(http.StatusOK, Tasks)

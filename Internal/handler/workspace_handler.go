@@ -82,10 +82,7 @@ func (h *WorkspaceHandler) CreateWorkspace(c *gin.Context) {
 		OwnerID:     userId,
 	}
 	if err := h.workspaceService.Create(c.Request.Context(), &modelWorkspace); err != nil {
-		c.JSON(500, gin.H{
-			"message": "Internal Server Error",
-			"error":   err.Error(),
-		})
+		c.Error(err)
 		return
 	}
 
@@ -105,10 +102,7 @@ func (h *WorkspaceHandler) CreateWorkspace(c *gin.Context) {
 func (h *WorkspaceHandler) GetAllWorkspace(c *gin.Context) {
 	workspaces, err := h.workspaceService.GetAllWorkspace(c.Request.Context())
 	if err != nil {
-		c.JSON(500, gin.H{
-			"message": "Internal Server Error",
-			"error":   err.Error(),
-		})
+		c.Error(err)
 		return
 	}
 	c.JSON(200, gin.H{"workspaces": workspaces})
@@ -147,10 +141,7 @@ func (h *WorkspaceHandler) UpdateWorkspace(c *gin.Context) {
 	modelWorkspace.ID = workspaceID
 	modelWorkspace.Version = workspace.Version
 	if err := h.workspaceService.UpdateWorkspace(c.Request.Context(), &modelWorkspace); err != nil {
-		c.JSON(500, gin.H{
-			"message": "Internal Server Error",
-			"error":   err.Error(),
-		})
+		c.Error(err)
 		return
 	}
 	c.JSON(200, gin.H{
@@ -176,10 +167,7 @@ func (h *WorkspaceHandler) DeleteWorkspace(c *gin.Context) {
 		return
 	}
 	if err := h.workspaceService.DeleteWorkspace(c.Request.Context(), workspaceID); err != nil {
-		c.JSON(500, gin.H{
-			"message": "Internal Server Error",
-			"error":   err.Error(),
-		})
+		c.Error(err)
 		return
 	}
 	c.JSON(200, gin.H{

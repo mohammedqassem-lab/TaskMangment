@@ -53,9 +53,7 @@ func (h *WorkspaceMemberHandler) InviteMember(c *gin.Context) {
 	}
 	err = h.workspaceMemberService.InviteMember(c.Request.Context(), workspaceIDInt, memper.UserID, memper.Role)
 	if err != nil {
-		c.JSON(404, gin.H{
-			"error": err.Error(),
-		})
+		c.Error(err)
 		return
 	}
 	c.JSON(200, gin.H{"message": "Member invited successfully"})
@@ -81,10 +79,7 @@ func (h *WorkspaceMemberHandler) GetWorkspaceMembers(c *gin.Context) {
 	}
 	members, err := h.workspaceMemberService.GetWorkspaceMembers(c.Request.Context(), workspaceIDInt)
 	if err != nil {
-		c.JSON(404, gin.H{
-			"error":   err.Error(),
-			"message": "Workspace not found",
-		})
+		c.Error(err)
 		return
 	}
 	c.JSON(200, gin.H{"members": members})
@@ -119,10 +114,7 @@ func (h *WorkspaceMemberHandler) UpdateMemberRole(c *gin.Context) {
 	}
 	err = h.workspaceMemberService.UpdateMemberRole(c.Request.Context(), workspaceID, req)
 	if err != nil {
-		c.JSON(404, gin.H{
-			"error":   err.Error(),
-			"message": "Workspace not found",
-		})
+		c.Error(err)
 		return
 	}
 	c.JSON(200, gin.H{"message": "Member role updated successfully"})
@@ -157,10 +149,7 @@ func (h *WorkspaceMemberHandler) DeleteMember(c *gin.Context) {
 	}
 	err = h.workspaceMemberService.DeleteMember(c.Request.Context(), workspaceID, userID)
 	if err != nil {
-		c.JSON(404, gin.H{
-			"error":   err.Error(),
-			"message": "Workspace not found",
-		})
+		c.Error(err)
 		return
 	}
 	c.JSON(200, gin.H{"message": "Member deleted successfully"})

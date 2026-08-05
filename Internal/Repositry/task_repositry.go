@@ -1,22 +1,26 @@
 package repositry
 
 import (
+	cashing "TaskMangment/Internal/Cashing"
 	model "TaskMangment/Internal/Model"
 	"TaskMangment/Internal/dto"
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
 )
 
 type TaskRepository struct {
-	db *sql.DB
+	db   *sql.DB
+	cash *cashing.Cache
 }
 
-func GetNewTaskRepository(db *sql.DB) *TaskRepository {
+func GetNewTaskRepository(db *sql.DB, cash *cashing.Cache) *TaskRepository {
 	return &TaskRepository{
-		db: db,
+		db:   db,
+		cash: cash,
 	}
 }
 func BuildQuery(taskFilter dto.TaskFilter) (string, []any) {
@@ -168,7 +172,15 @@ func (r *TaskRepository) Create(ctx context.Context, Task *model.Task) error {
 		tx.Rollback()
 		return err
 	}
-	tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+	val, err := json.Marshal(Task)
+	if err == nil {
+		r.cash.Set("Task"+strconv.FormatInt(id, 10), val, 60)
+	}
+	r.cash.Set("Task"+strconv.FormatInt(id, 10), val, 60)
 	return nil
 }
 func (r *TaskRepository) Update(ctx context.Context, Task *dto.EditTask) error {
@@ -278,6 +290,7 @@ func (r *TaskRepository) Delete(ctx context.Context, Id int64) error {
 		return fmt.Errorf("the data was changed")
 	}
 	tx.Commit()
+	r.cash.Delete("Task" + strconv.FormatInt(Id, 10))
 	return nil
 }
 func (r *TaskRepository) GetAll(ctx context.Context, TaskFilter dto.TaskFilter) ([]*model.Task, error) {

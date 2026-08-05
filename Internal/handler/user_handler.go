@@ -43,10 +43,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 	}
 	err := h.userService.Register(c.Request.Context(), modelUser)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"massage": "InternalServerError",
-			"error":   err.Error(),
-		})
+		c.Error(err)
 		return
 	}
 	c.JSON(http.StatusCreated, gin.H{
@@ -77,10 +74,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 	}
 	token, err := h.userService.Login(c.Request.Context(), modelUser)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"message": "Unauthorized",
-			"error":   err.Error(),
-		})
+		c.Error(err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
@@ -107,10 +101,7 @@ func (h *UserHandler) RefreshToken(c *gin.Context) {
 	}
 	dto, err := h.userService.RefreshToken(c, requst.Token)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Bad Request",
-			"error":   err.Error(),
-		})
+		c.Error(err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
