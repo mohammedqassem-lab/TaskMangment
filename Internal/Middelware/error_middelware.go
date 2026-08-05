@@ -15,7 +15,7 @@ func ErrorMiddleware() gin.HandlerFunc {
 		if len(c.Errors) > 0 {
 			err := c.Errors.Last().Err
 			fmt.Println("ErrorMiddleware: ", c.Errors.Last().Error())
-			logfile.LogErr(err)
+			logfile.LogErr(err, c.FullPath())
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
 				"message": err.Error(),

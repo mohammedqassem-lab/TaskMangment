@@ -1,10 +1,2 @@
-time=2026-08-05T07:45:51.664Z level=ERROR msg="Key: 'AddProjectRequest.Name' Error:Field validation for 'Name' failed on the 'required' tag\nKey: 'AddProjectRequest.Description' Error:Field validation for 'Description' failed on the 'required' tag"
-time=2026-08-05T07:56:41.450Z level=INFO msg="HTTP Server Started On :8080"
-time=2026-08-05T07:57:24.127Z level=ERROR msg="Key: 'AddProjectRequest.Name' Error:Field validation for 'Name' failed on the 'required' tag\nKey: 'AddProjectRequest.Description' Error:Field validation for 'Description' failed on the 'required' tag"
-time=2026-08-05T08:03:50.822Z level=INFO msg="HTTP Server Started On :8080"
-time=2026-08-05T08:04:16.437Z level=ERROR msg="Key: 'AddProjectRequest.Name' Error:Field validation for 'Name' failed on the 'required' tag\nKey: 'AddProjectRequest.Description' Error:Field validation for 'Description' failed on the 'required' tag"
-time=2026-08-05T08:06:05.936Z level=INFO msg="HTTP Server Started On :8080"
-time=2026-08-05T08:06:22.551Z level=ERROR msg="Key: 'AddProjectRequest.Name' Error:Field validation for 'Name' failed on the 'required' tag\nKey: 'AddProjectRequest.Description' Error:Field validation for 'Description' failed on the 'required' tag"
-time=2026-08-05T08:09:11.176Z level=INFO msg="HTTP Server Started On :8080"
-time=2026-08-05T08:09:47.835Z level=INFO msg="Key: 'AddProjectRequest.Name' Error:Field validation for 'Name' failed on the 'required' tag\nKey: 'AddProjectRequest.Description' Error:Field validation for 'Description' failed on the 'required' tag"
-time=2026-08-05T08:16:03.834Z level=ERROR msg="Key: 'AddProjectRequest.Name' Error:Field validation for 'Name' failed on the 'required' tag\nKey: 'AddProjectRequest.Description' Error:Field validation for 'Description' failed on the 'required' tag"
+time=2026-08-05T09:12:54.640Z level=ERROR msg="Key: 'AddProjectRequest.Name' Error:Field validation for 'Name' failed on the 'required' tag\nKey: 'AddProjectRequest.Description' Error:Field validation for 'Description' failed on the 'required' tag" path=/project/:id/create
+time=2026-08-05T09:18:07.593Z level=ERROR msg="Key: 'AddProjectRequest.Name' Error:Field validation for 'Name' failed on the 'required' tag\nKey: 'AddProjectRequest.Description' Error:Field validation for 'Description' failed on the 'required' tag" path=/project/:id/create

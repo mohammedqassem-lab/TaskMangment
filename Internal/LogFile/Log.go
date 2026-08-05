@@ -25,10 +25,17 @@ func InitLogger() func() {
 	}
 }
 
-func LogErr(err error) {
+func LogErr(err error, path string) {
 	if err == nil {
 		return
 	}
 	fmt.Println("Error from logger:", err.Error())
-	slog.Error(err.Error())
+	slog.Error(err.Error(), slog.String("path", path))
+}
+func LogInfo(info string, path string) {
+	if info == "" {
+		return
+	}
+	fmt.Println("Info from logger:", path, info)
+	slog.Info(info, "path", path)
 }

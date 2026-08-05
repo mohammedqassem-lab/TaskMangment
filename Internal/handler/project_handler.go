@@ -1,10 +1,10 @@
 package handler
 
 import (
+	logfile "TaskMangment/Internal/LogFile"
 	model "TaskMangment/Internal/Model"
 	service "TaskMangment/Internal/Service"
 	"TaskMangment/Internal/dto"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -36,23 +36,31 @@ func (h *ProjectHandler) Create(c *gin.Context) {
 	workspaceID := c.Param("id")
 	workspaceIDInt, err := strconv.ParseInt(workspaceID, 10, 64)
 	if err != nil {
+		logfile.LogInfo(err.Error(), "ProjectHandler.Create: strconv.ParseInt")
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid workspace ID",
 		})
 		return
 	}
 	if err := c.ShouldBindJSON(&requst); err != nil {
+		logfile.LogInfo(err.Error(), "ProjectHandler.Create: c.ShouldBindJSON")
 		c.Error(err)
 		return
 	}
 	UserId, ok := c.Get("user")
 	if !ok {
-		c.Error(fmt.Errorf("user not found in context,you are not auth"))
+		logfile.LogInfo("User not found in context", "ProjectHandler.Create: c.Get")
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"massage": "you are not auth",
+		})
 		return
 	}
 	UserIdInt, err := strconv.ParseInt(UserId.(string), 10, 64)
 	if err != nil {
-		c.Error(err)
+		logfile.LogInfo(err.Error(), "ProjectHandler.Create: strconv.ParseInt")
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"massage": "you are not auth",
+		})
 		return
 	}
 	model := model.Project{
