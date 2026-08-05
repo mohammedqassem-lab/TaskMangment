@@ -4,6 +4,7 @@ import (
 	model "TaskMangment/Internal/Model"
 	service "TaskMangment/Internal/Service"
 	"TaskMangment/Internal/dto"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -35,30 +36,23 @@ func (h *ProjectHandler) Create(c *gin.Context) {
 	workspaceID := c.Param("id")
 	workspaceIDInt, err := strconv.ParseInt(workspaceID, 10, 64)
 	if err != nil {
-		c.JSON(400, gin.H{
+		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid workspace ID",
 		})
 		return
 	}
 	if err := c.ShouldBindJSON(&requst); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"massage": "BadRequest",
-			"error":   err.Error(),
-		})
+		c.Error(err)
 		return
 	}
 	UserId, ok := c.Get("user")
 	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"massage": "you are not auth",
-		})
+		c.Error(fmt.Errorf("user not found in context,you are not auth"))
 		return
 	}
 	UserIdInt, err := strconv.ParseInt(UserId.(string), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"massage": "you are not auth",
-		})
+		c.Error(err)
 		return
 	}
 	model := model.Project{
@@ -69,10 +63,7 @@ func (h *ProjectHandler) Create(c *gin.Context) {
 	}
 	err = h.projectService.Create(c, &model)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"massage": "an error occorded",
-			"error":   err.Error(),
-		})
+		c.Error(err)
 		return
 	}
 	c.JSON(http.StatusCreated, gin.H{

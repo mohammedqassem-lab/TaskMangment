@@ -1,6 +1,7 @@
 package middelware
 
 import (
+	logfile "TaskMangment/Internal/LogFile"
 	"fmt"
 	"net/http"
 
@@ -14,6 +15,7 @@ func ErrorMiddleware() gin.HandlerFunc {
 		if len(c.Errors) > 0 {
 			err := c.Errors.Last().Err
 			fmt.Println("ErrorMiddleware: ", c.Errors.Last().Error())
+			logfile.LogErr(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
 				"message": err.Error(),

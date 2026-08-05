@@ -9,7 +9,7 @@
 // @license.name MIT
 
 // @host localhost:8080
-// @BasePath /api/v1
+// @BasePath /
 
 // @securityDefinitions.apikey BearerAuth
 // @in header
@@ -19,6 +19,7 @@ package main
 
 import (
 	app "TaskMangment/Internal/App"
+	logfile "TaskMangment/Internal/LogFile"
 	"context"
 	"log"
 	"net/http"
@@ -31,7 +32,8 @@ import (
 )
 
 func main() {
-
+	logfileCleanup := logfile.InitLogger()
+	defer logfileCleanup()
 	application, err := app.New()
 	if err != nil {
 		log.Fatal(err)
@@ -43,8 +45,6 @@ func main() {
 	}
 
 	go func() {
-		log.Println("HTTP Server Started On :8080")
-
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Server Error: %v", err)
 		}

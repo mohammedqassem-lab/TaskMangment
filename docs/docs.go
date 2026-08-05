@@ -491,7 +491,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Create a new workSpace",
+                "description": "Get all workspaces",
                 "consumes": [
                     "application/json"
                 ],
@@ -501,15 +501,8 @@ const docTemplate = `{
                 "tags": [
                     "WorkSpace"
                 ],
-                "summary": "CreateWorkspace",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Workspace"
-                        }
-                    }
-                }
+                "summary": "GetAllWorkspace",
+                "responses": {}
             }
         },
         "/workspace/create": {
@@ -983,32 +976,6 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
-                }
-            }
-        },
-        "model.Workspace": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "ownerID": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "version": {
-                    "type": "integer",
-                    "format": "int64"
                 }
             }
         }

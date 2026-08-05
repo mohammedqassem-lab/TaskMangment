@@ -1,0 +1,2 @@
+Key: 'AddProjectRequest.Name' Error:Field validation for 'Name' failed on the 'required' tag
+Key: 'AddProjectRequest.Description' Error:Field validation for 'Description' failed on the 'required' tag
